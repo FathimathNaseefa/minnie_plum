@@ -276,80 +276,7 @@ table th{
                 </div>
 
                 
-              <!-- <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Your Orders</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Order Date</th>
-                                        <th>Status</th>
-                                        <th>Total Amount</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% if (userOrders.length > 0) { %>
-                                        <% userOrders.forEach(order => { %>
-                                            <tr>
-                                                <td><%= order._id %></td>
-                                                <td>
-                                                    <%= new Date(order.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'long', year: 'numeric' }) %>
-                                                </td>
-                                                <td>
-                                                    <span class="<%= order.status === 'Pending' ? 'text-warning' : (order.status === 'Cancelled' || order.status === 'Returned') ? 'text-danger' : 'text-success' %>">
-                                                        <%= order.status %>
-                                                    </span>
-                                                </td>
-                                                <td>₹<%= order.totalAmount %></td> -->
-                                                <!-- <td>
-                                                    <a style="color: rgb(78, 78, 245);" href="/order-details/<%= order._id %>" class="btn btn-primary btn-sm">View Details</a>
-            
-                                                     <% if (order.status !== "Cancelled") { %>
-                                                        <button class="cancel-btn btn btn-danger btn-sm" data-id="<%= order._id %>" data-payment="<%= order.paymentMethod %>">Cancel</button>
-                                                    <% } %> 
-                                                    
-
-                                                  
-                                                  
-            
-                                                    <% if (order.status === "Delivered") { %>
-                                                        <button class="return-btn btn btn-warning btn-sm" data-id="<%= order._id %>" data-payment="<%= order.paymentMethod %>">Return</button>
-                                                    <% } %>
-                                                </td> -->
-                                                <!-- <td>
-                                                  <a style="color: rgb(78, 78, 245);" href="/order-details/<%= order._id %>" class="btn btn-primary btn-sm">View Details</a>
-            
-                                                     <% if (order.status !== "Cancelled") { %>
-                                                  <a href="/cancel-order/<%= order._id %>?payment=<%= order.paymentMethod %>" 
-                                                     class="btn btn-danger btn-sm">Cancel</a>
-                                                     <% } %> 
-                                              
-                                                  <% if (order.status === "Delivered") { %>
-                                                      <a href="/return-order/<%= order._id %>?payment=<%= order.paymentMethod %>" 
-                                                         class="btn btn-warning btn-sm">Return</a>
-                                                  <% } %>
-                                              </td>
-                                              
-                                            </tr>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <tr>
-                                            <td colspan="5" class="text-center">No orders found.</td>
-                                        </tr>
-                                    <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-             -->
+              
              <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
               <div class="card">
                   <div class="card-header">
@@ -362,9 +289,7 @@ table th{
                                   <tr>
                                       <th>Order ID</th>
                                       <th>Order Date</th>
-                                      <td>
-                                        Payment status
-                                    </td>
+                                      <th>Pay Status</th> 
                                       <th>Status</th>
                                       <th>Total Amount</th>
                                       <th>Actions</th>
@@ -378,22 +303,11 @@ table th{
                                               <td>
                                                   <%= new Date(order.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'long', year: 'numeric' }) %>
                                               </td>
-                                              <td>
-                                                <% if (order.paymentStatus === "Paid") { %>
-                                                    <span class="badge bg-success">Paid</span>
-                                                <% } else { %>
-                                                    <span class="badge bg-warning">Pending</span>
-                                                <% } %>
-                                            </td>
-                                              <!-- <td>
-                                                  <span class="<%= order.status === 'Pending' ? 'text-warning' : (order.status === 'Cancelled' || order.status === 'Returned') ? 'text-danger' : 'text-success' %>">
-                                                   
-                                                      
-                                                  
-                                                      <%= order.status %>
-                                                      
-                                                  </span>
-                                              </td> -->
+                                              
+                                                <!-- <td><%= order.paymentStatus%></td> -->
+                                                <td style="color: <%= order.paymentStatus === 'Paid' ? 'green' : 'red' %>">
+                                                  <%= order.paymentStatus %>
+                                              </td>
 
 
                                               <td>
@@ -406,23 +320,22 @@ table th{
                                             </td>
                                             
 
+                                            
 
 
                                               <td>₹<%= order.totalAmount %></td>
                                               <td>
                                                   <a style="color: rgb(78, 78, 245);" href="/order-details/<%= order._id %>" class="btn btn-primary btn-sm">View Details</a>
-                                                  <!-- <% if (order.status !== "Delivered" ) { %>
-                                                      <a href="/cancel-order/<%= order.orderId %>?payment=<%= order.paymentMethod %>" class="btn btn-danger btn-sm">Cancel</a>
-                                                  <% } %>
-                                                  <% if (order.status === "Delivered") { %>
-                                                      <a href="/return-order/<%= order.orderId %>?payment=<%= order.paymentMethod %>" class="btn btn-warning btn-sm">Return</a>
-                                                  <% } %> -->
-                                                  <% if (order.status !== "Delivered" && order.status !== "Cancelled" && order.status !== "Return Requested") { %>
+                                                  
+                                                  <% if (order.status !== "Delivered" && order.status !== "Cancelled" && order.status !== "Return Requested" && order.status !== "Return accepted" && order.status !== "Return rejected") { %>
                                                     <a href="/cancel-order/<%= order.orderId %>?payment=<%= order.paymentMethod %>" class="btn btn-danger btn-sm">Cancel</a>
                                                 <% } %>
                                                 <% if (order.status === "Delivered") { %>
                                                     <a href="/return-order/<%= order.orderId %>?payment=<%= order.paymentMethod %>" class="btn btn-warning btn-sm">Return</a>
                                                 <% } %>
+                                                <% if (order.paymentStatus === "Failed") { %>
+                                                  <a href="/retry-payment/<%= order.orderId %>" class="btn btn-success btn-sm">Continue Payment</a>
+                                              <% } %>
                                                 
                                               </td>
                                           </tr>
@@ -524,25 +437,7 @@ table th{
                 </div>
                 <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
 
-                <!-- <--<div class="card">
-                  <div class="card-header">
-                      <h5>Referral Program</h5>
-                  </div>
-                  <div class="card-body">
-                      <h6>Refer your friends and earn ₹50 per signup!</h6>
-              
-                      <p>Share this link:</p>
-                      <div class="input-group mb-3">
-                        <input type="text" id="referralLink" class="form-control" 
-                        value="<%= baseUrl %>/signup?ref=<%= user.referralCode %>" readonly>
-                 
-                          <button class="btn btn-primary" onclick="copyReferralLink()">Copy</button>
-                      </div>
-              
-                      <p><strong>Wallet Balance: ₹<%= user.wallet %></strong></p>
-                  </div>
-              </div>
-              </div> --> 
+                
               <div class="card">
                 <div class="card-header">
                     <h5>Referral Program</h5>
@@ -561,27 +456,6 @@ table th{
                 </div>
             </div>
             
-            
-            
-              
-
-              
-              
-              
-
-                
-                
-                
-
-
-
-
-
-
-
-
-
-
               </div>
             </div>
           </div>
@@ -617,13 +491,7 @@ table th{
 
 
   
-                  // function copyReferralLink() {
-                  //   var copyText = document.getElementById("referralLink");
-                  //   copyText.select();
-                  //   document.execCommand("copy");
-                  //   alert("Referral link copied: " + copyText.value);
-                  // }
-              
+                  
 
                   
 

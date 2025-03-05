@@ -122,63 +122,6 @@
 
 
 
-
-
-            <!-- <main class="main">
-                <section class="mt-50 mb-50">
-                    <div class="container">
-                        <h3>Shopping Cart</h3>
-                        <div class="cart-container">
-                            <% if (data.length > 0) { %>
-                                <% var x = 0; %>
-                                <% for (let i = 0; i < data.length; i++) { %>
-                                    <div class="cart-item">
-                                        <img src="/uploads/re-image/<%= data[i].productDetails[0].productImage[0] %>" alt="Product Image">
-                                        <div class="item-details">
-                                            <h5><%= data[i].productDetails[0].productName %></h5>
-                                            <p>Size: <%= data[i].size %></p>
-
-
-                                            
-                                                    
-                                            
-
-
-                                            <p>Color: <%= data[i].color %></p>
-                                            
-                                            <p>
-                                                <% 
-                                                    let salePrice = data[i].productDetails[0].salePrice; 
-                                                    let finalPrice = roundToFixedNumber(data[i].finalPrice, 10); // ✅ Round to nearest 10
-                                                    let discountPercent = Math.round(((salePrice - finalPrice) / salePrice) * 100);
-                                                %>
-                                                <% if (discountPercent > 0) { %>
-                                                    <s>₹<%= salePrice.toLocaleString('en-IN') %></s> 
-                                                    ₹<%= finalPrice.toLocaleString('en-IN') %> 
-                                                    <span style="color: red; font-weight: bold;">
-                                                        (<%= discountPercent %>% OFF)
-                                                    </span>
-                                                <% } else { %>
-                                                    ₹<%= salePrice.toLocaleString('en-IN') %> 
-                                                <% } %>
-                                            </p>
-                                            <div class="quantity-control">
-                                                <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', '<%= data[i].quantity %>', -1, '<%= data[i].finalPrice %>', '<%= data[i].productDetails[0].quantity %>', '<%= data[i].productDetails[0].maxPerPerson %>')">-</button>
-                                                <input id="cartProductQuantity-<%= data[i].productDetails[0]._id %>" value="<%= data[i].quantity %>" readonly>
-                                                <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', '<%= data[i].quantity %>', 1, '<%= data[i].finalPrice %>', '<%= data[i].productDetails[0].quantity %>', '<%= data[i].productDetails[0].maxPerPerson %>')">+</button>
-                                            </div>
-                                        </div>
-                                        <button class="btn-remove" onclick="confirmRemove('<%= data[i].productDetails[0]._id %>')">Remove</button>
-                                    </div>
-                                    <% x += parseFloat(finalPrice) * data[i].quantity; %> 
-                                <% } %>
-                            <% } else { %>
-                                <p class="lead text-center">No item found in Cart</p>
-                            <% } %>
-                        </div>
-                     -->
-
-
                     
 
 
@@ -233,7 +176,7 @@
 
             <div class="cart-totals mt-4">
                 <h4>PRICE DETAILS</h4>
-                <p>Total: ₹<span id="total"><%= x %></span></p>
+                <p>Total: ₹<span id="total"><%= grandTotal %></span></p>
                 <a href="javascript:void(0)" class="btn-checkout" onclick="handleCheckout(<%= data.length %>)">Proceed To Checkout</a>
             </div>
         </div>

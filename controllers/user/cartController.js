@@ -1,100 +1,15 @@
-const User = require("../../models/userSchema");
-const Product = require("../../models/productSchema");
-const mongodb = require("mongodb");
-const { getDiscountedPrice } = require("../../utils/priceHelper");
-const Offer = require("../../models/offerSchema");  // ✅ Import Offer model
-const Category = require("../../models/categorySchema");
+const User = require('../../models/userSchema');
+const Product = require('../../models/productSchema');
+const mongodb = require('mongodb');
+const { getDiscountedPrice } = require('../../utils/priceHelper');
+const Offer = require('../../models/offerSchema'); // ✅ Import Offer model
+const Category = require('../../models/categorySchema');
 
-const mongoose=require("mongoose")
-
-
+const mongoose = require('mongoose');
 
 function roundToFixedNumber(value, fixedNumber) {
   return Math.round(value / fixedNumber) * fixedNumber;
 }
-
-
-// const getCartPage = async (req, res) => {
-//   try {
-//     const id = req.session.user;
-//     const user = await User.findById(id);
-
-//     const oid = new mongodb.ObjectId(id);
-//     let data = await User.aggregate([
-//       { $match: { _id: oid } },
-//       { $unwind: "$cart" },
-//       {
-//         $project: {
-//           proId: { $toObjectId: "$cart.productId" },
-//           quantity: "$cart.quantity",
-//           size: "$cart.size",
-//           color: "$cart.color"
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "products", 
-//           localField: "proId",
-//           foreignField: "_id",
-//           as: "productDetails",
-//         },
-//       },
-//     ]);
-
-//     let grandTotal = 0;
-
-//     for (let item of data) {
-//       if (!item.productDetails || item.productDetails.length === 0) {
-//         console.log("⚠️ Product not found for cart item:", item.proId);
-//         continue; // Skip missing products
-//       }
-
-//       const product = item.productDetails[0];
-//       let finalPrice = product.salePrice;
-
-//       // ✅ Apply Product Offer if available
-//       if (product.pdtOffer) {
-//         const pdtOffer = await Offer.findById(product.pdtOffer);
-//         if (pdtOffer) {
-//           let discount = (product.salePrice * pdtOffer.discountValue) / 100;
-//           let pdtOfferPrice = product.salePrice - discount;
-//           finalPrice = pdtOfferPrice < finalPrice ? pdtOfferPrice : finalPrice;
-//         }
-//       }
-
-//       // ✅ Apply Category Offer if available
-//       const category = await mongoose.model("Category").findById(product.category).populate("catOffer");
-//       if (category && category.catOffer) {
-//         const catOffer = await Offer.findById(category.catOffer);
-//         if (catOffer) {
-//           let discount = (product.salePrice * catOffer.discountValue) / 100;
-//           let catOfferPrice = product.salePrice - discount;
-//           finalPrice = catOfferPrice < finalPrice ? catOfferPrice : finalPrice;
-//         }
-//       }
-
-//       item.finalPrice = finalPrice;
-//       grandTotal += finalPrice * item.quantity;
-//     }
-//     let cartData = req.user.cart;
-
-//     // Filter out products that are no longer valid or don't have productDetails
-    
-
-//     res.render("cart", {
-//       user,
-//       data,
-//       grandTotal,
-//       roundToFixedNumber,
-      
-//     });
-
-//   } catch (error) {
-//     console.error("Error loading cart:", error);
-//     res.redirect("/pageNotFound");
-//   }
-// };
-
 
 const getCartPage = async (req, res) => {
   try {
@@ -104,21 +19,21 @@ const getCartPage = async (req, res) => {
     const oid = new mongodb.ObjectId(id);
     let data = await User.aggregate([
       { $match: { _id: oid } },
-      { $unwind: "$cart" },
+      { $unwind: '$cart' },
       {
         $project: {
-          proId: { $toObjectId: "$cart.productId" },
-          quantity: "$cart.quantity",
-          size: "$cart.size",
-          color: "$cart.color",
+          proId: { $toObjectId: '$cart.productId' },
+          quantity: '$cart.quantity',
+          size: '$cart.size',
+          color: '$cart.color',
         },
       },
       {
         $lookup: {
-          from: "products",
-          localField: "proId",
-          foreignField: "_id",
-          as: "productDetails",
+          from: 'products',
+          localField: 'proId',
+          foreignField: '_id',
+          as: 'productDetails',
         },
       },
     ]);
@@ -126,7 +41,9 @@ const getCartPage = async (req, res) => {
     let grandTotal = 0;
 
     // Filter out invalid products that no longer exist
-    data = data.filter(item => item.productDetails && item.productDetails.length > 0);
+    data = data.filter(
+      (item) => item.productDetails && item.productDetails.length > 0
+    );
 
     for (let item of data) {
       const product = item.productDetails[0];
@@ -143,7 +60,10 @@ const getCartPage = async (req, res) => {
       }
 
       // ✅ Apply Category Offer if available
-      const category = await mongoose.model("Category").findById(product.category).populate("catOffer");
+      const category = await mongoose
+        .model('Category')
+        .findById(product.category)
+        .populate('catOffer');
       if (category && category.catOffer) {
         const catOffer = await Offer.findById(category.catOffer);
         if (catOffer) {
@@ -160,12 +80,16 @@ const getCartPage = async (req, res) => {
     // Remove items from cart if the product is no longer available
     await User.updateOne(
       { _id: oid },
-      { $pull: { cart: { productId: { $nin: data.map(item => item.proId) } } } }
+      {
+        $pull: {
+          cart: { productId: { $nin: data.map((item) => item.proId) } },
+        },
+      }
     );
 
     // Handle case if there are no valid items in the cart
     if (data.length === 0) {
-      return res.render("cart", {
+      return res.render('cart', {
         user,
         data: [],
         grandTotal: 0,
@@ -177,7 +101,7 @@ const getCartPage = async (req, res) => {
     let cartData = req.user.cart;
 
     // Send the response to the cart page
-    res.render("cart", {
+    res.render('cart', {
       user,
       data,
       grandTotal,
@@ -185,17 +109,10 @@ const getCartPage = async (req, res) => {
       cartData,
     });
   } catch (error) {
-    console.error("Error loading cart:", error);
-    res.redirect("/pageNotFound");
+    console.error('Error loading cart:', error);
+    res.redirect('/pageNotFound');
   }
 };
-
-
-
-
-
-
-
 
 const addToCart = async (req, res) => {
   try {
@@ -203,21 +120,23 @@ const addToCart = async (req, res) => {
     const userId = req.session.user;
 
     if (!userId) {
-      return res.json({ status: "User not logged in" });
+      return res.json({ status: 'User not logged in' });
     }
 
     const findUser = await User.findById(userId);
     if (!findUser) {
-      return res.json({ status: "User not found" });
+      return res.json({ status: 'User not found' });
     }
 
-    const product = await Product.findById(productId).populate("pdtOffer").lean();
+    const product = await Product.findById(productId)
+      .populate('pdtOffer')
+      .lean();
     if (!product) {
-      return res.json({ status: "Product not found" });
+      return res.json({ status: 'Product not found' });
     }
 
     if (!product.stock || product.stock <= 0) {
-      return res.json({ status: "Out of stock" });
+      return res.json({ status: 'Out of stock' });
     }
 
     let price = product.salePrice || product.regularPrice;
@@ -234,13 +153,16 @@ const addToCart = async (req, res) => {
 
     // ✅ Find if product already exists in the cart with same size & color
     const cartIndex = findUser.cart.findIndex(
-      (item) => item.productId.toString() === productId && item.size === size && item.color === color
+      (item) =>
+        item.productId.toString() === productId &&
+        item.size === size &&
+        item.color === color
     );
 
     if (cartIndex === -1) {
       // Ensure added quantity does not exceed stock
       if (parseInt(quantity) > product.stock) {
-        return res.json({ status: "Out of stock" });
+        return res.json({ status: 'Out of stock' });
       }
 
       findUser.cart.push({
@@ -249,7 +171,7 @@ const addToCart = async (req, res) => {
         size,
         color,
         price,
-        finalPrice,  // ✅ Add finalPrice with offer applied
+        finalPrice, // ✅ Add finalPrice with offer applied
         totalPrice: finalPrice * (parseInt(quantity) || 1), // ✅ Update totalPrice
         pdtOffer, // ✅ Store pdtOffer ID in cart
       });
@@ -258,7 +180,7 @@ const addToCart = async (req, res) => {
       const newQuantity = productInCart.quantity + (parseInt(quantity) || 1);
 
       if (newQuantity > product.stock) {
-        return res.json({ status: "Out of stock" });
+        return res.json({ status: 'Out of stock' });
       }
 
       findUser.cart[cartIndex].quantity = newQuantity;
@@ -276,19 +198,11 @@ const addToCart = async (req, res) => {
       cartLength: findUser.cart.length,
       user: userId,
     });
-
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: false, error: "Server error" });
+    return res.status(500).json({ status: false, error: 'Server error' });
   }
 };
-
-
-
-
-
-
-
 
 const changeQuantity = async (req, res) => {
   try {
@@ -297,17 +211,17 @@ const changeQuantity = async (req, res) => {
     const count = parseInt(req.body.count, 10);
 
     if (isNaN(count)) {
-      return res.json({ status: false, error: "Invalid count value" });
+      return res.json({ status: false, error: 'Invalid count value' });
     }
 
     const findUser = await User.findOne({ _id: user });
     const findProduct = await Product.findOne({ _id: id });
 
     if (!findUser) {
-      return res.json({ status: false, error: "User not found" });
+      return res.json({ status: false, error: 'User not found' });
     }
     if (!findProduct) {
-      return res.json({ status: false, error: "Product not found" });
+      return res.json({ status: false, error: 'Product not found' });
     }
 
     // Find product in user's cart
@@ -316,14 +230,17 @@ const changeQuantity = async (req, res) => {
     );
 
     if (!productExistinCart) {
-      return res.json({ status: false, error: "Product not in cart" });
+      return res.json({ status: false, error: 'Product not in cart' });
     }
 
     let newQuantity = productExistinCart.quantity + count;
 
     // Enforce minimum quantity (1)
     if (newQuantity <= 0) {
-      return res.json({ status: false, error: "Quantity cannot be less than 1" });
+      return res.json({
+        status: false,
+        error: 'Quantity cannot be less than 1',
+      });
     }
 
     // Enforce max quantity per person
@@ -336,33 +253,35 @@ const changeQuantity = async (req, res) => {
 
     // Ensure stock availability
     if (newQuantity > findProduct.stock) {
-      return res.json({ status: false, error: "Insufficient stock" });
+      return res.json({ status: false, error: 'Insufficient stock' });
     }
 
     // Update the cart quantity in the database
     await User.updateOne(
-      { _id: user, "cart.productId": id },
-      { $set: { "cart.$.quantity": newQuantity } }
+      { _id: user, 'cart.productId': id },
+      { $set: { 'cart.$.quantity': newQuantity } }
     );
 
     // Calculate the grand total of all cart items using finalPrice
     const grandTotalResult = await User.aggregate([
       { $match: { _id: new mongodb.ObjectId(user) } },
-      { $unwind: "$cart" },
+      { $unwind: '$cart' },
       {
         $lookup: {
-          from: "products",
-          localField: "cart.productId",
-          foreignField: "_id",
-          as: "productDetails",
+          from: 'products',
+          localField: 'cart.productId',
+          foreignField: '_id',
+          as: 'productDetails',
         },
       },
-      { $unwind: "$productDetails" },
+      { $unwind: '$productDetails' },
       {
         $group: {
           _id: null,
           totalPrice: {
-            $sum: { $multiply: ["$cart.quantity", "$productDetails.finalPrice"] },
+            $sum: {
+              $multiply: ['$cart.quantity', '$productDetails.finalPrice'],
+            },
           },
         },
       },
@@ -380,13 +299,12 @@ const changeQuantity = async (req, res) => {
       grandTotal: updatedGrandTotal,
     });
   } catch (error) {
-    console.error("Error in changeQuantity:", error);
-    return res.status(500).json({ status: false, error: "Internal server error" });
+    console.error('Error in changeQuantity:', error);
+    return res
+      .status(500)
+      .json({ status: false, error: 'Internal server error' });
   }
 };
-
-
-
 
 const deleteProduct = async (req, res) => {
   try {
@@ -396,15 +314,11 @@ const deleteProduct = async (req, res) => {
     const cartIndex = user.cart.findIndex((item) => item.productId == id);
     user.cart.splice(cartIndex, 1);
     await user.save();
-    res.redirect("/cart");
+    res.redirect('/cart');
   } catch (error) {
-    res.redirect("/pageNotFound");
+    res.redirect('/pageNotFound');
   }
 };
-
-
-
-
 
 module.exports = {
   getCartPage,

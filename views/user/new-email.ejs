@@ -54,47 +54,6 @@
             return true;
         }
     }
-//     $(document).ready(function () {
-//     $("#updateEmailForm").submit(function (event) {
-//         event.preventDefault(); // Prevent form submission
-
-//         const newEmail = $("#email").val(); // Get email input
-
-//         $.ajax({
-//             type: "POST",
-//             url: "/update-email",
-//             data: { newEmail: newEmail },
-//             success: function (response) {
-//                 if (response.success) {
-//                     Swal.fire({
-//                         icon: "success",
-//                         title: "Email Updated Successfully!",
-//                         showConfirmButton: false,
-//                         timer: 1500
-//                     }).then(() => {
-//                         window.location.href = response.redirectUrl;
-//                     });
-//                 } else {
-//                     Swal.fire({
-//                         icon: "error",
-//                         title: "Error",
-//                         text: response.message
-//                     });
-//                 }
-//             },
-//             error: function () {
-//                 Swal.fire({
-//                     icon: "error",
-//                     title: "Error",
-//                     text: "Failed to update email. Please try again."
-//                 });
-//             }
-//         });
-//     });
-// });
-
-//     // Display SweetAlert if there's a success message
-
 
 
 $(document).ready(function () {

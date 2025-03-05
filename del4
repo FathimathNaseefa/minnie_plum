@@ -8,12 +8,20 @@
     padding: 20px;
   }
 
-  .shop-topbar {
-    display: flex;
-    justify-content: space-between;
+
+
+
+
+  .shop-topbar {display: flex;justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
   }
+
+
+
+
+  
+
 
   .search-form {
     display: flex;

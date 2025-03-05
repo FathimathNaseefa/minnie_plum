@@ -258,11 +258,15 @@
                     <p>Coupon Discount: ₹<%= roundToFixedNumber(appliedCoupon?.discountValue || 0, 10).toLocaleString('en-IN') %></p>
                     <p>Delivery: ₹0</p>
                     <p>Cash/Pay on Delivery Fee: ₹0</p>
-                    <h3>Order Total: ₹<%= roundToFixedNumber(totalAmount, 10).toLocaleString('en-IN') %></h3>
+                    <h3>Order Total: <span id="orderTotal">₹<%= roundToFixedNumber(totalAmount, 10).toLocaleString('en-IN') %></span></h3>
                 </div>
             
         
         
+
+
+
+                
         
         
         <form id="orderForm" action="/checkout/createOrder" method="POST" onsubmit="return handlePayment(event)">
@@ -288,7 +292,8 @@
 
 <script>
 document.getElementById("razorpay-option").addEventListener("click", async () => {
-  const amount = document.getElementById("totalAmount").value;
+   const amount = document.getElementById("totalAmount").value;
+
   
   const response = await fetch("/payment/create-razorpayorder", {
     method: "POST",

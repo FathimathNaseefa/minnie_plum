@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const referralOfferSchema = new mongoose.Schema({
   rewardAmount: { type: Number, required: true }, // Amount credited to referrer & referee
@@ -6,4 +6,4 @@ const referralOfferSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
 });
 
-module.exports = mongoose.model("ReferralOffer", referralOfferSchema);
+module.exports = mongoose.model('ReferralOffer', referralOfferSchema);

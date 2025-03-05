@@ -1,23 +1,23 @@
-const mongoose=require("mongoose")
-const Offer = require("../../models/offerSchema");
-const Product = require("../../models/productSchema");
-const Category = require("../../models/categorySchema");
+const mongoose = require('mongoose');
+const Offer = require('../../models/offerSchema');
+const Product = require('../../models/productSchema');
+const Category = require('../../models/categorySchema');
 
-
-
-exports.listOffers1=(req, res) => {
-  res.render("offers1",{currentPage:"offers1"});
-}
+exports.listOffers1 = (req, res) => {
+  res.render('offers1', { currentPage: 'offers1' });
+};
 // Get All Product Offers
 exports.getProductOffers = async (req, res) => {
   try {
-    const pdtOffers = await Offer.find({ type: "product" }).populate("productId");
+    const pdtOffers = await Offer.find({ type: 'product' }).populate(
+      'productId'
+    );
     const products = await Product.find(); // Fetch all products separately
 
-    res.render("productOffer", { pdtOffers, products, currentPage:"offers1"}); // Pass both to EJS
+    res.render('productOffer', { pdtOffers, products, currentPage: 'offers1' }); // Pass both to EJS
   } catch (error) {
-    console.error("Error fetching product offers:", error);
-    res.redirect("/admin/dashboard");
+    console.error('Error fetching product offers:', error);
+    res.redirect('/admin/dashboard');
   }
 };
 
@@ -104,10 +104,9 @@ exports.getProductOffers = async (req, res) => {
 
 //     // Update product with offer and new final price
 //     product.pdtOffer = savedOffer._id;
-  
+
 //     // Ensure finalPrice is always set
 // product.finalPrice = newFinalPrice || product.salePrice;
-
 
 //     console.log("Product before saving:", product);
 
@@ -172,10 +171,9 @@ exports.getProductOffers = async (req, res) => {
 
 //     // Update product with offer and new final price
 //     product.pdtOffer = savedOffer._id;
-  
+
 //     // Ensure finalPrice is always set
 // product.finalPrice = newFinalPrice || product.salePrice;
-
 
 //     console.log("Product before saving:", product);
 
@@ -193,7 +191,10 @@ exports.addProductOffer = async (req, res) => {
     const { productId, discountValue, expiry } = req.body;
 
     if (!productId || !discountValue || !expiry) {
-      return res.json({ success: false, message: 'Please fill all required fields.' });
+      return res.json({
+        success: false,
+        message: 'Please fill all required fields.',
+      });
     }
 
     const product = await Product.findById(productId);
@@ -205,16 +206,22 @@ exports.addProductOffer = async (req, res) => {
     const existingOffer = await Offer.findOne({
       productId,
       type: 'product',
-      expiry: { $gte: new Date() }  // Ensure the offer is still valid
+      expiry: { $gte: new Date() }, // Ensure the offer is still valid
     });
 
     if (existingOffer) {
-      return res.json({ success: false, message: 'This product already has an active offer.' });
+      return res.json({
+        success: false,
+        message: 'This product already has an active offer.',
+      });
     }
 
     // Validate discount value
     if (!discountValue || isNaN(discountValue)) {
-      return res.json({ success: false, message: 'Discount value is invalid.' });
+      return res.json({
+        success: false,
+        message: 'Discount value is invalid.',
+      });
     }
 
     // Calculate discount
@@ -239,124 +246,22 @@ exports.addProductOffer = async (req, res) => {
     res.json({ success: true, message: 'Offer added successfully.' });
   } catch (error) {
     console.error('Error adding product offer:', error);
-    res.json({ success: false, message: 'An error occurred while adding the offer.' });
+    res.json({
+      success: false,
+      message: 'An error occurred while adding the offer.',
+    });
   }
 };
-
-
-
-
-// exports.addCategoryOffer = async (req, res) => {
-//   try {
-//     const { categoryId, discountValue, expiry } = req.body;
-
-//     if (!categoryId || !discountValue || !expiry) {
-//       console.log("Missing required fields:", { categoryId, discountValue, expiry });
-//       return res.redirect("/admin/category-offers");
-//     }
-
-//     const category = await Category.findById(categoryId);
-//     if (!category) {
-//       console.log("Category not found for ID:", categoryId);
-//       return res.redirect("/admin/category-offers");
-//     }
-
-//     console.log("Category details before updating:", category);
-
-//     if (!discountValue || isNaN(discountValue)) {
-//       console.log("Error: Discount value is missing or invalid:", discountValue);
-//       return res.redirect("/admin/category-offers");
-//     }
-
-//     // Create a new category offer
-//     const newOffer = new Offer({
-//       type: "category",
-//       categoryId,
-//       discountValue,
-//       expiry,
-//       isActive: true,
-//     });
-
-//     const savedOffer = await newOffer.save();
-
-//     // Assign offer to category
-//     category.catOffer = savedOffer._id;
-//     await category.save();
-
-//     console.log("Category after saving offer:", category);
-
-//     // Apply category discount to all products in this category
-//     const products = await Product.find({ category: categoryId });
-    
-
-// console.log("Products under this category:", products); // ✅ Debugging
-
-
-//     for (const product of products) {
-//       const discountAmount = (product.salePrice * discountValue) / 100;
-//       const newFinalPrice = product.salePrice - discountAmount;
-
-//       console.log(`Updating product ${product._id}: Discount Amount = ${discountAmount}, New Final Price = ${newFinalPrice}`);
-//       product.catOffer = savedOffer._id;
-//       product.finalPrice = newFinalPrice || product.salePrice;
-//       await product.save();
-//     }
-
-//     res.redirect("/admin/category-offers");
-//   } catch (error) {
-//     console.error("Error adding category offer:", error);
-//     res.redirect("/admin/dashboard");
-//   }
-// };
-
-// exports.addCategoryOffer = async (req, res) => {
-//   try {
-//     const { categoryId, discountValue, expiry } = req.body;
-
-//     // Check if offer already exists for this category
-//     const existingOffer = await Offer.findOne({ categoryId });
-//     if (existingOffer) {
-//       console.log("Offer for this category already exists:", categoryId);
-//       return res.redirect("/admin/category-offers?error=Category offer already exists");
-//     }
-
-//     const category = await Category.findById(categoryId);
-//     if (!category) {
-//       console.log("Category not found for ID:", categoryId);
-//       return res.redirect("/admin/category-offers");
-//     }
-
-//     // Create a new offer
-//     const newOffer = new Offer({
-//       type: "category",
-//       categoryId,
-//       discountValue,
-//       expiry,
-//       isActive: true,
-//     });
-
-//     await newOffer.save();
-
-//     // Assign offer to category
-//     category.catOffer = newOffer._id;
-//     await category.save();
-
-//     res.redirect("/admin/category-offers");
-//   } catch (error) {
-//     console.error("Error adding category offer:", error);
-//     res.redirect("/admin/category-offers");
-//   }
-// };
-
-
-
 
 exports.addCategoryOffer = async (req, res) => {
   try {
     const { categoryId, discountValue, expiry } = req.body;
 
     if (!categoryId || !discountValue || !expiry) {
-      return res.json({ success: false, message: 'Please fill all required fields.' });
+      return res.json({
+        success: false,
+        message: 'Please fill all required fields.',
+      });
     }
 
     const category = await Category.findById(categoryId);
@@ -368,16 +273,22 @@ exports.addCategoryOffer = async (req, res) => {
     const existingOffer = await Offer.findOne({
       categoryId,
       type: 'category',
-      expiry: { $gte: new Date() }  // Ensures the offer is still valid
+      expiry: { $gte: new Date() }, // Ensures the offer is still valid
     });
 
     if (existingOffer) {
-      return res.json({ success: false, message: 'This category already has an active offer.' });
+      return res.json({
+        success: false,
+        message: 'This category already has an active offer.',
+      });
     }
 
     // Validate discount value
     if (!discountValue || isNaN(discountValue)) {
-      return res.json({ success: false, message: 'Discount value is invalid.' });
+      return res.json({
+        success: false,
+        message: 'Discount value is invalid.',
+      });
     }
 
     // Create new offer
@@ -410,13 +321,12 @@ exports.addCategoryOffer = async (req, res) => {
     res.json({ success: true, message: 'Category offer added successfully.' });
   } catch (error) {
     console.error('Error adding category offer:', error);
-    res.json({ success: false, message: 'An error occurred while adding the category offer.' });
+    res.json({
+      success: false,
+      message: 'An error occurred while adding the category offer.',
+    });
   }
 };
-
-
-
-
 
 // Delete Product Offer
 // exports.deleteProductOffer = async (req, res) => {
@@ -438,7 +348,7 @@ exports.deleteProductOffer = async (req, res) => {
     }
 
     // Delete the offer using deleteOne or findByIdAndDelete
-    await Offer.findByIdAndDelete(offerId);  // Using findByIdAndDelete
+    await Offer.findByIdAndDelete(offerId); // Using findByIdAndDelete
 
     // Optionally, remove the offer reference from the product
     const product = await Product.findById(offer.productId);
@@ -450,16 +360,17 @@ exports.deleteProductOffer = async (req, res) => {
     res.json({ success: true, message: 'Offer deleted successfully.' });
   } catch (error) {
     console.error('Error deleting product offer:', error);
-    res.json({ success: false, message: 'An error occurred while deleting the offer.' });
+    res.json({
+      success: false,
+      message: 'An error occurred while deleting the offer.',
+    });
   }
 };
-
-
 
 exports.deleteCategoryOffer = async (req, res) => {
   try {
     const { offerId } = req.body;
-    
+
     // Find the offer by ID
     const offer = await Offer.findById(offerId);
     if (!offer) {
@@ -476,30 +387,38 @@ exports.deleteCategoryOffer = async (req, res) => {
       await category.save();
     }
 
-    res.json({ success: true, message: 'Category offer deleted successfully.' });
+    res.json({
+      success: true,
+      message: 'Category offer deleted successfully.',
+    });
   } catch (error) {
     console.error('Error deleting category offer:', error);
-    res.json({ success: false, message: 'An error occurred while deleting the offer.' });
+    res.json({
+      success: false,
+      message: 'An error occurred while deleting the offer.',
+    });
   }
 };
-
-
 
 // Get All Category Offers
 exports.getCategoryOffers = async (req, res) => {
   try {
     const categories = await Category.find();
-    const categoryOffers = await Offer.find({ type: "category" }).populate("categoryId");
-    res.render("categoryOffer", { categoryOffers,categories,currentPage:"offers1" });
+    const categoryOffers = await Offer.find({ type: 'category' }).populate(
+      'categoryId'
+    );
+    res.render('categoryOffer', {
+      categoryOffers,
+      categories,
+      currentPage: 'offers1',
+    });
   } catch (error) {
     console.error(error);
-    res.redirect("/admin/dashboard");
+    res.redirect('/admin/dashboard');
   }
 };
 
 // Add Category Offer
-
-
 
 // Delete Category Offer
 // exports.deleteCategoryOffer = async (req, res) => {
@@ -515,11 +434,11 @@ exports.getCategoryOffers = async (req, res) => {
 // Get All Referral Offers
 exports.getReferralOffers = async (req, res) => {
   try {
-    const referralOffers = await Offer.find({ type: "referral" });
-    res.render("referrelOffer", { referralOffers });
+    const referralOffers = await Offer.find({ type: 'referral' });
+    res.render('referrelOffer', { referralOffers });
   } catch (error) {
     console.error(error);
-    res.redirect("/admin/dashboard");
+    res.redirect('/admin/dashboard');
   }
 };
 
@@ -529,7 +448,7 @@ exports.addReferralOffer = async (req, res) => {
     const { discountPercentage, startDate, endDate } = req.body;
 
     const newOffer = new Offer({
-      type: "referral",
+      type: 'referral',
       discountPercentage,
       startDate,
       endDate,
@@ -537,10 +456,10 @@ exports.addReferralOffer = async (req, res) => {
     });
 
     await newOffer.save();
-    res.redirect("/admin/referral-offers");
+    res.redirect('/admin/referral-offers');
   } catch (error) {
     console.error(error);
-    res.redirect("/admin/dashboard");
+    res.redirect('/admin/dashboard');
   }
 };
 
@@ -548,10 +467,10 @@ exports.addReferralOffer = async (req, res) => {
 exports.deleteReferralOffer = async (req, res) => {
   try {
     await Offer.findByIdAndDelete(req.body.offerId);
-    res.redirect("/admin/referral-offers");
+    res.redirect('/admin/referral-offers');
   } catch (error) {
     console.error(error);
-    res.redirect("/admin/dashboard");
+    res.redirect('/admin/dashboard');
   }
 };
 

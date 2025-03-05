@@ -29,7 +29,7 @@
 
 .checkout__input {
   margin-bottom: 6px;
-  
+
   p {
     color: $heading-color;
     margin-bottom: 12px;
@@ -55,7 +55,6 @@
 }
 
 .checkout__input__checkbox {
-
   label {
     font-size: 15px;
     color: #0d0d0d;
@@ -85,7 +84,7 @@
       height: 14px;
       width: 14px;
       border: 1.5px solid #d7d7d7;
-      content: "";
+      content: '';
       border-radius: 2px;
 
       &:after {
@@ -99,7 +98,7 @@
         -webkit-transform: rotate(127deg);
         -ms-transform: rotate(127deg);
         transform: rotate(127deg);
-        content: "";
+        content: '';
         opacity: 0;
       }
     }

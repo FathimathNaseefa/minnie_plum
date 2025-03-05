@@ -245,37 +245,6 @@ a{
 <script>
 
 
-// function addToCart(productId, price) {
-//     const quantity = 1; // Default quantity
-
-//     fetch("/addToCart", {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ productId, quantity, price }) // ✅ Send price from wishlist
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === true) {
-//             Swal.fire({
-//                 icon: "success",
-//                 title: "Added to Cart",
-//                 text: "Item has been added successfully!",
-//                 timer: 1500,
-//                 showConfirmButton: false
-//             });
-
-//             return fetch(`/wishlist/remove/${productId}`, { method: 'POST' });
-//         }
-//     })
-//     .then(() => {
-//         setTimeout(() => location.reload(), 1500);
-//     })
-//     .catch(error => console.error("Error:", error));
-// }
-
-
 function addToCart(productId, price, size, color) {
     const quantity = 1; // Default quantity
 

@@ -1,4 +1,4 @@
-const User=require("../models/userSchema");
+const User = require('../models/userSchema');
 
 // const userAuth =(req,res,next)=>{
 //     if(req.session.user){
@@ -19,63 +19,42 @@ const User=require("../models/userSchema");
 //     }
 // }
 
-
-
-
-
 const userAuth = (req, res, next) => {
-    if (req.session.user) {
-        User.findById(req.session.user)
-            .then(user => {
-                if (user && !user.isBlocked) {
-                    req.user = user; // Attach user object to req
-                    next();
-                } else {
-                    res.redirect("/login");
-                }
-            })
-            .catch(error => {
-                console.error("Error in user auth middleware:", error);
-                res.status(500).send("Internal Server Error");
-            });
-    } else {
-        res.redirect("/login");
-    }
+  if (req.session.user) {
+    User.findById(req.session.user)
+      .then((user) => {
+        if (user && !user.isBlocked) {
+          req.user = user; // Attach user object to req
+          next();
+        } else {
+          res.redirect('/login');
+        }
+      })
+      .catch((error) => {
+        console.error('Error in user auth middleware:', error);
+        res.status(500).send('Internal Server Error');
+      });
+  } else {
+    res.redirect('/login');
+  }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const adminAuth=(req,res,next)=>{
-    User.findOne({isAdmin:true})
-    .then(data=>{
-        if(data){
-            next();
-        }else{
-            res.redirect("/admin/login")
-        }
+const adminAuth = (req, res, next) => {
+  User.findOne({ isAdmin: true })
+    .then((data) => {
+      if (data) {
+        next();
+      } else {
+        res.redirect('/admin/login');
+      }
     })
-    .catch(error=>{
-        console.log("Error in admin auth middleware");
-        res.status(500).send("Internal Server Error")
-    })
-}
+    .catch((error) => {
+      console.log('Error in admin auth middleware');
+      res.status(500).send('Internal Server Error');
+    });
+};
 
-
-
-
-module.exports={
-    userAuth,
-    adminAuth
-}
+module.exports = {
+  userAuth,
+  adminAuth,
+};

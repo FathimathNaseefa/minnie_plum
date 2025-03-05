@@ -477,72 +477,7 @@ function changeQuantity(amount) {
 
 
 
-// function addToCart(productId, stock) {
-//     const selectedSize = document.getElementById("selectedSize").value;
-//     const selectedColor = document.querySelector('input[name="selectedColor"]:checked');
-//     const quantityInput = document.getElementById("quantity");
-//     const addToCartBtn = document.getElementById("addToCartBtn");
 
-//     const maxStock = stock; // ✅ Ensure stock comes from the backend
-//     const quantity = parseInt(quantityInput.value);
-    
-//     if (!selectedSize) {
-//         alert("Please select a size.");
-//         return;
-//     }
-//     if (!selectedColor) {
-//         alert("Please select a color.");
-//         return;
-//     }
-//     if (isNaN(maxStock) || maxStock <= 0) {
-//         alert("This product is out of stock.");
-//         addToCartBtn.disabled = true;
-//         return;
-//     }
-//     if (quantity > maxStock) {
-//         alert(`Only ${maxStock} items are available in stock.`);
-//         return;
-//     }
-
-//     const cartData = {
-//         productId: productId,
-//         size: selectedSize,
-//         color: selectedColor.value,
-//         quantity: quantity
-//     };
-
-//     fetch('/addToCart', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(cartData)
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === true) {
-//             alert('Product added to cart successfully!');
-
-//             // ✅ Update stock in UI based on remaining stock
-//             const remainingStock = maxStock - quantity;
-//             quantityInput.setAttribute("max", remainingStock);
-
-//             if (remainingStock === 0) {
-//                 addToCartBtn.disabled = true;
-//                 alert("You have added all available items to the cart.");
-//             }
-//         } else if (data.status === "Out of stock") {
-//             alert("This product is out of stock.");
-//             addToCartBtn.disabled = true;
-//         } else {
-//             alert("Failed to add product to cart.");
-//         }
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
-//         alert('Failed to add product to cart.');
-//     });
-// }
 
 
 
@@ -610,6 +545,11 @@ function addToCart(productId, stock) {
         Swal.fire("Error", "Failed to add product to cart.", "error");
     });
 }
+
+
+
+
+
 
 
 

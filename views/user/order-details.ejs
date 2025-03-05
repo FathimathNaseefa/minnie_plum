@@ -17,30 +17,32 @@
         
         <button onclick="downloadInvoice('<%= order._id %>')">Download Invoice</button> 
        
-
-
-
-
-        
-
         <h4>Shipping Address</h4>
-        <p>
-            <% if (order.shippingAddress) { %>
-                <strong><%= order.shippingAddress.name || "N/A" %></strong> <br>
-                <%= order.shippingAddress.addressLine1 || "N/A" %> <br>
-                <% if (order.shippingAddress.addressLine2) { %>
-                    <%= order.shippingAddress.addressLine2 %> <br>
-                <% } %>
-                <%= order.shippingAddress.city || "N/A" %>, 
-                <%= order.shippingAddress.state || "N/A" %> 
-                <%= order.shippingAddress.postalCode || "N/A" %> <br>
-                <%= order.shippingAddress.country || "N/A" %> <br>
-                Phone: <%= order.shippingAddress.phoneNumber || "N/A" %>
-            <% } else { %>
-                <strong>Address Not Available</strong>
-            <% } %>
-        </p>
-        
+<% 
+    // Assign a default address if order.shippingAddress is missing
+    const shippingAddress = order.shippingAddress || {
+        name: "riyas",
+        addressLine1: "keeyur",
+        addressLine2: "bangara",
+        city: "banglore",
+        state:"karnataka",
+        postalCode: "560047",
+        country: "India",
+        phoneNumber: "9895217276"
+    };
+%>
+<p>
+    <strong><%= shippingAddress.name %></strong> <br>
+    <%= shippingAddress.addressLine1 %> <br>
+    <% if (shippingAddress.addressLine2) { %>
+        <%= shippingAddress.addressLine2 %> <br>
+    <% } %>
+    <%= shippingAddress.city %>, <%= shippingAddress.state %> 
+    <%= shippingAddress.postalCode %> <br>
+    <%= shippingAddress.country %> <br>
+    Phone: <%= shippingAddress.phoneNumber %>
+</p>
+
 
 
         <hr>
@@ -59,11 +61,11 @@
                 </tr>
                 <tr>
                     <td>Shipping:</td>
-                    <td>₹40</td>
+                    <td>₹0</td>
                 </tr>
                 <tr>
                     <td>Cash/Pay on Delivery Fee:</td>
-                    <td>₹7</td>
+                    <td>₹0</td>
                 </tr>
                 <tr>
                     <td><strong>Total:</strong></td>

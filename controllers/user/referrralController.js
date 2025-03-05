@@ -1,9 +1,11 @@
-const User = require("../../models/userSchema");
-const ReferralOffer = require("../../models/referralOfferSchema");
+const User = require('../../models/userSchema');
+const ReferralOffer = require('../../models/referralOfferSchema');
 
 // Generate Unique Referral Code
 const generateReferralCode = (name) => {
-  return name.substring(0, 3).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+  return (
+    name.substring(0, 3).toUpperCase() + Math.floor(1000 + Math.random() * 9000)
+  );
 };
 
 // Apply Referral Offer During Signup
@@ -16,7 +18,7 @@ exports.applyReferral = async (req, res) => {
     if (referralCode) {
       referrer = await User.findOne({ referralCode });
       if (!referrer) {
-        return res.status(400).json({ message: "Invalid referral code" });
+        return res.status(400).json({ message: 'Invalid referral code' });
       }
     }
 
@@ -40,10 +42,12 @@ exports.applyReferral = async (req, res) => {
       await newUser.save();
     }
 
-    res.status(201).json({ message: "User registered successfully", user: newUser });
+    res
+      .status(201)
+      .json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
-    console.error("Error applying referral:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error applying referral:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
@@ -51,11 +55,14 @@ exports.applyReferral = async (req, res) => {
 exports.getReferralOffer = async (req, res) => {
   try {
     const offer = await ReferralOffer.findOne({ isActive: true });
-    if (!offer) return res.status(404).json({ message: "No active referral offer found" });
+    if (!offer)
+      return res
+        .status(404)
+        .json({ message: 'No active referral offer found' });
     res.status(200).json(offer);
   } catch (error) {
-    console.error("Error fetching referral offer:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error fetching referral offer:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
@@ -65,10 +72,10 @@ exports.createReferralOffer = async (req, res) => {
     const { rewardAmount, expiry } = req.body;
     const offer = new ReferralOffer({ rewardAmount, expiry });
     await offer.save();
-    res.status(201).json({ message: "Referral offer created", offer });
+    res.status(201).json({ message: 'Referral offer created', offer });
   } catch (error) {
-    console.error("Error creating referral offer:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error creating referral offer:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
@@ -76,9 +83,9 @@ exports.createReferralOffer = async (req, res) => {
 exports.deactivateReferralOffer = async (req, res) => {
   try {
     await ReferralOffer.updateMany({}, { isActive: false });
-    res.status(200).json({ message: "Referral offer deactivated" });
+    res.status(200).json({ message: 'Referral offer deactivated' });
   } catch (error) {
-    console.error("Error deactivating referral offer:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error deactivating referral offer:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };

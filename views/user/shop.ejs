@@ -372,23 +372,6 @@
     </div>
   </form>
 
-  
-  
-
-  
-  
-
-  
-  
-  
-
-      
-
-
-
-  
-
-
 </div>
 
 <!-- Filter for Out of Stock Products -->
@@ -442,7 +425,7 @@
           <a href="/productDetails?id=<%= products[i]._id %>">
               <img src="/uploads/re-image/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" style="height:170px" />
               <h5><%= products[i].productName %></h5>
-              <p>Brand: <%= products[i].brand %></p>
+              <p>Brand: <%= products[i].brand.brandName %></p>
               
               
 
@@ -655,36 +638,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </script>
 <%- include("../../views/partials/user/footer") %>

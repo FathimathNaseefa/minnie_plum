@@ -1,4 +1,4 @@
-<!-- views/admin/add-coupon.ejs -->
+<!-- views/admin/add-coupon.ejs
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,14 +18,14 @@
         <h1 class="mb-4">Add Coupon</h1>
 
         <form id="couponForm" action="/admin/add-coupon" method="POST" onsubmit="return validateCoupon(event)">
-            <!-- Coupon Code -->
+            
             <div class="mb-3">
                 <label for="code" class="form-label">Coupon Code:</label>
                 <input type="text" name="code" id="code" class="form-control" required>
                 <span class="error" id="codeError"></span>
             </div>
 
-            <!-- Discount Type -->
+            
             <div class="mb-3">
                 <label for="discountType" class="form-label">Discount Type:</label>
                 <select name="discountType" id="discountType" class="form-select" required>
@@ -34,35 +34,35 @@
                 </select>
             </div>
 
-            <!-- Discount Value -->
+            >
             <div class="mb-3">
                 <label for="discount" class="form-label">Discount Value:</label>
                 <input type="number" name="discount" id="discount" class="form-control" required min="1">
                 <span class="error" id="discountError"></span>
             </div>
 
-            <!-- Expiry Date -->
+            
             <div class="mb-3">
                 <label for="expiry" class="form-label">Expiry Date:</label>
                 <input type="date" name="expiry" id="expiry" class="form-control" required>
                 <span class="error" id="expiryError"></span>
             </div>
 
-            <!-- Usage Limit -->
+            
             <div class="mb-3">
                 <label for="usageLimit" class="form-label">Usage Limit:</label>
                 <input type="number" name="usageLimit" id="usageLimit" class="form-control" required min="1">
                 <span class="error" id="usageLimitError"></span>
             </div>
 
-            <!-- Minimum Order Value -->
+            
             <div class="mb-3">
                 <label for="minOrderValue" class="form-label">Minimum Order Value (Optional):</label>
                 <input type="number" name="minOrderValue" id="minOrderValue" class="form-control" min="1">
                 <span class="error" id="minOrderValueError"></span>
             </div>
 
-            <!-- Applicable Categories -->
+            
             <div class="mb-3">
                 <label for="categoryIds" class="form-label">Applicable to Categories:</label>
                 <select name="categoryIds[]" id="categoryIds" class="form-select" multiple>
@@ -72,7 +72,7 @@
                 </select>
             </div>
 
-            <!-- Applicable Products -->
+            
             <div class="mb-3">
                 <label for="productIds" class="form-label">Applicable to Products (Optional):</label>
                 <select name="productIds[]" id="productIds" class="form-select" multiple>
@@ -82,7 +82,7 @@
                 </select>
             </div>
 
-            <!-- User Restriction -->
+            
             <div class="mb-3">
                 <label for="userRestriction" class="form-label">User Restriction (Optional):</label>
                 <select name="userRestriction" id="userRestriction" class="form-select">
@@ -92,11 +92,11 @@
                 </select>
             </div>
 
-            <!-- Submit Button -->
+            
             <button type="submit" class="btn btn-primary">Create Coupon</button>
         </form>
 
-        <!-- Back to Coupons -->
+        
         <a href="/admin/coupon" class="btn btn-secondary mt-3">Back to Coupons</a>
     </div>
 
@@ -206,4 +206,4 @@
         document.getElementById("couponForm").addEventListener("submit", validateCoupon);
     </script>
 </body>
-</html>
+</html> -->

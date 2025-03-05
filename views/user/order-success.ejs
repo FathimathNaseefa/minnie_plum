@@ -54,7 +54,23 @@
         <p><strong>Order ID:</strong> <%= order.orderId %></p>
         <p><strong>Total Amount:</strong> ₹<%= order.totalAmount %></p>
         <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-        <p><strong>Shipping Address:</strong> <%= order.shippingAddress %></p>
+        
+      <p><strong>Shipping Address:</strong>
+        <% if (order.shippingAddress) { %>
+          <%= order.shippingAddress.name || "Guest User" %>, 
+          <%= order.shippingAddress.addressLine1 || "123 Default Street" %>,
+          <%= order.shippingAddress.addressLine2 || "Apartment 1" %>,
+          <%= order.shippingAddress.city || "Default City" %>, 
+          <%= order.shippingAddress.state || "Default State" %> - 
+          <%= order.shippingAddress.postalCode || "000000" %>, 
+          <%= order.shippingAddress.country || "Default Country" %>
+        <% } else { %>
+          No address available.
+        <% } %>
+      </p>
+      <p><strong>Phone:</strong> <%= order.shippingAddress?.phoneNumber || "N/A" %></p> 
+
+      
         <p><strong>Estimated Delivery:</strong> <%= estimatedDelivery %></p>
     </div>
 

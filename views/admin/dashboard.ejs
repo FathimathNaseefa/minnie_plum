@@ -344,9 +344,9 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="/admin/wallet">
                    <i class="fas fa-exchange-alt"></i>
-                   <span>transaction</span>
+                   <span>Wallet</span>
                 </a>
             </li>
             <!-- <li>
@@ -391,8 +391,8 @@
             <div class="payment--card light-red">
                 <div class="card--header">
                     <div class="amount">
-                        <span class="title">Payment amount</span>
-                        <span class="amount-value">$500.00</span>
+                        <span class="title">Total sales</span>
+                        <span class="amount-value"></span>
                     </div>
                     <i class="fas fa-dollar-sign icon"></i>
                 </div>
@@ -401,8 +401,8 @@
             <div class="payment--card light-purple">
                 <div class="card--header">
                     <div class="amount">
-                        <span class="title">Payment amount</span>
-                        <span class="amount-value">$500.00</span>
+                        <span class="title">Total refund</span>
+                        <span class="amount-value"></span>
                     </div>
                     <i class="fas fa-list icon dark-purple"></i>
                 </div>
@@ -411,8 +411,8 @@
             <div class="payment--card light-green">
                 <div class="card--header">
                     <div class="amount">
-                        <span class="title">Payment amount</span>
-                        <span class="amount-value">$500.00</span>
+                        <span class="title">Total User</span>
+                        <span class="amount-value"></span>
                     </div>
                     <i class="fas fa-users icon dark-green"></i>
                 </div>
@@ -421,8 +421,8 @@
             <div class="payment--card light-blue">
                 <div class="card--header">
                     <div class="amount">
-                        <span class="title">Payment amount</span>
-                        <span class="amount-value">$500.00</span>
+                        <span class="title">Total stock</span>
+                        <span class="amount-value"></span>
                     </div>
                     <i class="fas fa-check icon dark-blue"></i>
                 </div>
@@ -431,7 +431,24 @@
         </div>
 
     </div>
-    <div class="tabular--wrapper">
+    <div class="chart-container">
+        <h3 class="main--title">Sales Overview</h3>
+        <canvas id="salesChart"></canvas>
+    </div>
+    <select id="chartFilter">
+        <option value="yearly">Yearly</option>
+        <option value="monthly">Monthly</option>
+        <option value="weekly">Weekly</option>
+    </select>
+    
+    
+
+
+
+
+
+
+    <!-- <div class="tabular--wrapper">
         <h3 class="main--title">Selling Products </h3>
         <div class="table-container">
             <table>
@@ -465,7 +482,196 @@
                 </tbody>
             </table>
         </div>
+    </div> -->
+
+
+
+
+
+    <div class="tabular--wrapper">
+        <h3 class="main--title">Best-Selling Products</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Sold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="bestSellingProducts">
+                    <!-- Data will be injected here dynamically -->
+                </tbody>
+            </table>
+        </div>
     </div>
+    
+    <div class="tabular--wrapper">
+        <h3 class="main--title">Best-Selling Categories</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category Name</th>
+                        <th>Sold</th>
+                    </tr>
+                </thead>
+                <tbody id="bestSellingCategories">
+                    <!-- Data will be injected here dynamically -->
+                </tbody>
+            </table>
+        </div>
     </div>
+    
+    <div class="tabular--wrapper">
+        <h3 class="main--title">Best-Selling Brands</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Brand Name</th>
+                        <th>Sold</th>
+                    </tr>
+                </thead>
+                <tbody id="bestSellingBrands">
+                    <!-- Data will be injected here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById("salesChart").getContext("2d");
+    let salesChart;
+
+    // Function to fetch and display sales chart data
+    function fetchChartData(filter) {
+        fetch(`/admin/chart-data?filter=${filter}`)
+            .then(response => response.json())
+            .then(data => {
+                if (salesChart) salesChart.destroy(); // Destroy previous chart
+                salesChart = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: "Total Sales (₹)",
+                                data: data.values,
+                                backgroundColor: "rgba(113,99,186,0.6)",
+                                borderColor: "rgba(113,99,186,1)",
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true },
+                        },
+                    },
+                });
+            })
+            .catch(error => console.error("Error fetching chart data:", error));
+    }
+
+    // Fetch and display best-selling products in the table
+    function fetchBestSellingProducts() {
+        fetch("/admin/best-selling-products")
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector("tbody");
+                tableBody.innerHTML = ""; // Clear existing rows
+
+                data.data.forEach(product => {
+                    const row = `<tr>
+                        <td>${product.productName}</td>
+                        <td>₹${product.price}</td>
+                        <td>${product.totalSold} pcs</td>
+                        <td>
+                            <i class="fas fa-circle" style="color:${product.stock > 0 ? "rgb(34, 233, 34)" : "red"};"></i>
+                            ${product.stock > 0 ? "In stock" : "Out of stock"}
+                        </td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error("Error fetching best-selling products:", error));
+    }
+
+    // Event listener for chart filter dropdown
+    document.getElementById("chartFilter").addEventListener("change", function () {
+        fetchChartData(this.value);
+    });
+
+    // Load default data
+    fetchChartData("yearly"); // Load yearly sales data
+    fetchBestSellingProducts(); // Load best-selling products
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    function fetchBestSellingData() {
+        fetch("/admin/best-selling-data")
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error("Error fetching best-selling data");
+                    return;
+                }
+
+                // Populate Best-Selling Products
+                const productTable = document.getElementById("bestSellingProducts");
+                productTable.innerHTML = "";
+                data.bestSellingProducts.forEach((product) => {
+                    productTable.innerHTML += `
+                        <tr>
+                            <td>${product.productName}</td>
+                            <td>₹${product.price}</td>
+                            <td>${product.totalSold} pcs</td>
+                            <td><i class="fas fa-circle" style="color:${product.stock > 0 ? "green" : "red"};"></i>
+                                ${product.stock > 0 ? "In stock" : "Out of stock"}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                // Populate Best-Selling Categories
+                const categoryTable = document.getElementById("bestSellingCategories");
+                categoryTable.innerHTML = "";
+                data.bestSellingCategories.forEach((category) => {
+                    categoryTable.innerHTML += `
+                        <tr>
+                            <td>${category.categoryName}</td>
+                            <td>${category.totalSold} pcs</td>
+                        </tr>
+                    `;
+                });
+
+                // Populate Best-Selling Brands
+                const brandTable = document.getElementById("bestSellingBrands");
+                brandTable.innerHTML = "";
+                data.bestSellingBrands.forEach((brand) => {
+                    brandTable.innerHTML += `
+                        <tr>
+                            <td>${brand.brandName}</td>
+                            <td>${brand.totalSold} pcs</td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(error => console.error("Error fetching best-selling data:", error));
+    }
+
+    fetchBestSellingData();
+});
+
+
+ </script>   
 </body>
 </html>

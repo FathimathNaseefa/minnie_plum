@@ -217,8 +217,26 @@
                 <button onclick="closeAddressModal()">Done</button>
             </div>
         </div>
+        <input type="hidden" id="selectedAddressId" value="<%= defaultAddress ? defaultAddress._id : '' %>">
+
 
         <button onclick="showAddAddressForm()" style="background-color: #FFD814; border: 1px solid #FCD200; padding: 10px 15px; cursor: pointer; border-radius: 8px; font-size: 14px; color: #0F1111; margin-top: 10px;">+ Add Address</button>
+        <div id="addAddressForm" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Add New Address</h3>
+                <form action="/checkout/addAddress" method="POST">
+                    <input type="text" name="name" placeholder="Full Name" required>
+                    <input type="text" name="addressLine1" placeholder="Address Line 1" required>
+                    <input type="text" name="city" placeholder="City" required>
+                    <input type="text" name="state" placeholder="State" required>
+                    <input type="text" name="postalCode" placeholder="Postal Code" required>
+                    <input type="text" name="country" placeholder="Country" required>
+                    <input type="text" name="phoneNumber" placeholder="Phone Number" required>
+                    <button type="submit">Save Address</button>
+                </form>
+                <button onclick="closeAddAddressForm()">Cancel</button>
+            </div>
+        </div>
          
 
 
@@ -285,6 +303,7 @@
 
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 document.getElementById("razorpay-option").addEventListener("click", async () => {
@@ -352,6 +371,7 @@ document.getElementById("razorpay-option").addEventListener("click", async () =>
 
 
 
+
 function openAddressModal() {
     document.getElementById('addressModal').style.display = 'flex';
 }
@@ -378,48 +398,144 @@ document.querySelectorAll('input[name="payment"]').forEach(radio => {
 
 
 
-function handlePayment(event) {
-    event.preventDefault(); // Prevent default form submission
-    const selectedMethod = document.querySelector('input[name="payment"]:checked')?.value;
 
-    if (!selectedMethod) {
-        alert("Please select a payment method.");
-        return false;
-    }
 
-    const orderTotalText = document.getElementById("orderTotal").innerText.replace("₹", "").trim();
-    const totalAmount = parseFloat(orderTotalText); // Convert to a number
+document.addEventListener("DOMContentLoaded", () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    console.log("📦 Cart Loaded on Page Load:", cart);
+});
+ 
 
-    if (selectedMethod === "razorpay") {
-        fetch('/create-razorpayorder', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ totalAmount }) // ✅ Send updated total after discount
-        })
-        .then(response => response.json())
-        .then(data => {
-            var options = {
-                "key": "<%= process.env.RAZORPAY_KEY_ID %>", 
-                "amount": data.amount,
-                "currency": data.currency,
-                "order_id": data.orderId,
-                "handler": function (response) {
-                    alert("Payment Successful!");
-                    document.getElementById("orderForm").submit();
+
+    function handlePayment(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get selected payment method
+        const selectedMethod = document.querySelector('input[name="payment"]:checked')?.value;
+        if (!selectedMethod) {
+            Swal.fire("Oops!", "Please select a payment method.", "warning");
+            return false;
+        }
+
+        // Get order total
+        const orderTotalText = document.getElementById("orderTotal").innerText;
+        const cleanedText = orderTotalText.replace(/[^\d.]/g, "");
+        const amount = parseFloat(cleanedText);
+
+        // Get selected shipping address
+        const selectedAddressId = document.getElementById("selectedAddressId").value;
+        if (!selectedAddressId) {
+            Swal.fire("Oops!", "Please select a shipping address before proceeding.", "warning");
+            return;
+        }
+
+        if (selectedMethod === "razorpay") {
+            fetch('/create-razorpayorder', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                "theme": { "color": "#3399cc" },
-                "method": { "upi": true, "wallet": true }
-            };
-            var rzp1 = new Razorpay(options);
-            rzp1.open();
-        })
-        .catch(error => console.error('Error:', error));
-        return false; // Prevents form submission until Razorpay succeeds
+                body: JSON.stringify({ 
+                    amount, 
+                    currency: "INR", 
+                    paymentMethod: "razorpay",
+                    shippingAddressId: selectedAddressId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("🚀 Razorpay Order API Response:", data);
+
+                if (!data.success) {
+                    Swal.fire("Error!", `Failed to create Razorpay order: ${data.message}`, "error");
+                    return;
+                }
+
+                var options = {
+                    key: "<%= process.env.RAZORPAY_KEY_ID %>",
+                    amount: data.order.amount,
+                    currency: data.order.currency,
+                    order_id: data.order.id,
+                    handler: function (response) {
+                        console.log("Payment Successful! Response:", response);
+
+                        // Verify the payment on your backend
+                        fetch('/verify-payment', {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify({
+                                order_id: response.razorpay_order_id,
+                                payment_id: response.razorpay_payment_id,
+                                signature: response.razorpay_signature,
+                                shippingAddressId: selectedAddressId
+                            })
+                        })
+                        .then(verifyResponse => verifyResponse.json())
+                        .then(verifyData => {
+                            if (verifyData.success) {
+                                const orderId = verifyData.orderId;
+                                Swal.fire({
+                                    title: "Payment Successful!",
+                                    text: "Your order has been placed successfully.",
+                                    icon: "success",
+                                    confirmButtonText: "OK"
+                                }).then(() => {
+                                    window.location.href = `/order-success/${orderId}`;
+                                });
+                            } else {
+                                Swal.fire("Error!", "Payment verification failed. Please contact support.", "error");
+                            }
+                        })
+                        .catch(verifyError => {
+                            console.error("Payment Verification Error:", verifyError);
+                            Swal.fire("Error!", "Payment verification failed. Please contact support.", "error");
+                        });
+                    },
+                    theme: { color: "#3399cc" }
+                };
+
+                var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+                    console.error("Payment Failed! Response:", response);
+
+                    fetch('/update-payment-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            order_id: response.error.metadata.order_id,
+                            paymentStatus: "Failed"
+                        })
+                    })
+                    .then(updateResponse => updateResponse.json())
+                    .then(updateData => {
+                        if (updateData.success) {
+                            Swal.fire("Payment Failed!", "Your payment was not successful. Please try again.", "error");
+                        } else {
+                            Swal.fire("Error!", "Failed to update payment status. Please contact support.", "error");
+                        }
+                    })
+                    .catch(updateError => {
+                        console.error("Update Payment Status Error:", updateError);
+                        Swal.fire("Error!", "Failed to update payment status. Please contact support.", "error");
+                    });
+                });
+
+                rzp1.open();
+            })
+            .catch(error => {
+                console.error('Error creating Razorpay order:', error);
+                Swal.fire("Error!", "Failed to create Razorpay order. Please try again.", "error");
+            });
+
+            return false; // Prevent form submission until Razorpay succeeds
+        }
+
+        document.getElementById("orderForm").submit();
     }
-
-    document.getElementById("orderForm").submit();
-}
-
 
 
 
@@ -573,6 +689,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+function showAddAddressForm() {
+    // Assuming you have a modal or form for adding an address
+    const addressForm = document.getElementById("addAddressForm");
+    if (addressForm) {
+        addressForm.style.display = "block"; // Show the address form
+    } else {
+        alert("Address form not found! Make sure you have an address form with id 'addAddressForm'.");
+    }
+}
 
 </script>
-<%- include("../../views/partials/user/footer") %>
+<%- include("../../views/partials/user/footer")%>
