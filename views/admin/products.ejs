@@ -81,37 +81,30 @@
                     </button>
                 </td>
                 <td>
-                    
-
-                        <form id="deleteForm-<%= data[i]._id%>" action="/admin/deleteProduct/<%=data[i]._id%>" method="POST" >
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="button" class="btn btn-danger" onclick="confirmDelete('<%=data[i]._id%>')">Delete</button>
-                            </form>
+                    <form id="deleteForm-<%= data[i]._id%>" action="/admin/deleteProduct/<%=data[i]._id%>" method="POST" >
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete('<%=data[i]._id%>')">Delete</button>
+                    </form>
                 </td>
             </tr>
             <%}%>
         </tbody>
-
     </table>
 </div>
-<!-- </div>
-</div> -->
-
- <div class="container mt-3">
+<div class="container mt-3">
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
- 
- 
-            <% for (let i = 1; i <= totalPages; i++) { %>
+           <% for (let i = 1; i <= totalPages; i++) { %>
             <li class="page-item <%=(i === currentPage) ? 'active' : '' %>">
                 <a class="page-link" href="?page=<%= i %>"><%= i %></a>
             </li>
             <% } %>
- 
- 
         </ul>
     </nav>
- </div>  
+ </div>   
+ 
+
+
   
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
@@ -181,14 +174,10 @@
     })
 }catch(error){
     console.error(error)
-}
-        }
+} }
 
         
-
-        
-
-    function confirmDelete(productId) {
+function confirmDelete(productId) {
         Swal.fire({
             title: "Are you sure?",
             text: "Once deleted, you won't be able to recover this product!",
@@ -236,12 +225,5 @@
             }
         });
     }
-
-
-    
-
-
-</script>
-
 </script>
 <%- include("../../views/partials/admin/footer") %>
