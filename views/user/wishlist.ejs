@@ -1,4 +1,3 @@
-
 <section class="breadcrumb-section">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -16,7 +15,7 @@
 
 <style>
     
-        .breadcrumb {
+.breadcrumb {
     display: flex;
     align-items: center;
     justify-content: start;
@@ -211,23 +210,14 @@ a{
         <% } %>
 
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4>₹<%= product.salePrice %></h4>
-                            <div class="wishlist-actions">
-                                <!-- <button class="add-to-cart-btn"
-                                    onclick="addToCart('<%= product._id %>')">
-                                    Add to Cart
-                                </button> -->
-                                <!-- <button class="add-to-cart-btn"
-    onclick="addToCart('<%= product._id %>', '<%= product.salePrice %>')">
-    Add to Cart
-</button> -->
-<button class="add-to-cart-btn"
-    onclick="addToCart('<%= product._id %>', '<%= product.salePrice %>', '<%= product.size && product.size.length > 0 ? product.size[0] : '' %>', '<%= product.color && product.color.length > 0 ? product.color[0] : '' %>')">
-    Add to Cart
-</button>
-
-
+        <div class="d-flex justify-content-between align-items-center">
+            <h4>₹<%= product.salePrice %></h4>
+        <div class="wishlist-actions">
+                                
+        <button class="add-to-cart-btn"
+            onclick="addToCart('<%= product._id %>', '<%= product.salePrice %>', '<%= product.size && product.size.length > 0 ? product.size[0] : '' %>', '<%= product.color && product.color.length > 0 ? product.color[0] : '' %>')">
+            Add to Cart
+        </button>
 
                             </div>
                         </div>
@@ -241,9 +231,7 @@ a{
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-
 
 function addToCart(productId, price, size, color) {
     const quantity = 1; // Default quantity
@@ -274,12 +262,6 @@ function addToCart(productId, price, size, color) {
     })
     .catch(error => console.error("Error:", error));
 }
-
-
-
-
-
-
 function removeFromWishlist(productId) {
     fetch(`/wishlist/remove/${productId}`, { method: 'POST' })
     .then(response => response.json())
