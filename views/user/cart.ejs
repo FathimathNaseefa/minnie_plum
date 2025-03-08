@@ -119,23 +119,18 @@
 }
 
 </style>
-
-
-
-                    
-
-
-                    <main class="main">
-                        <section class="mt-50 mb-50">
-                          <div class="container">
-                            <h3>Shopping Cart</h3>
-                            <div class="cart-container">
-                              <% if (data.length > 0) { %>
-                                <% for (let i = 0; i < data.length; i++) { %>
-                                  <% if (data[i].productDetails && data[i].productDetails[0]) { %> <!-- Check if productDetails exist -->
-                                    <div class="cart-item">
-                                      <img src="/uploads/re-image/<%= data[i].productDetails[0].productImage[0] %>" alt="Product Image">
-                                      <div class="item-details">
+                
+<main class="main">
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <h3>Shopping Cart</h3>
+                <div class="cart-container">
+                    <% if (data.length > 0) { %>
+                        <% for (let i = 0; i < data.length; i++) { %>
+                            <% if (data[i].productDetails && data[i].productDetails[0]) { %> <!-- Check if productDetails exist -->
+                                <div class="cart-item">
+                                    <img src="/uploads/re-image/<%= data[i].productDetails[0].productImage[0] %>" alt="Product Image">
+                                       <div class="item-details">
                                         <h5><%= data[i].productDetails[0].productName %></h5>
                                         <p>Size: <%= data[i].size %></p>
                                         <p>Color: <%= data[i].color %></p>
@@ -168,17 +163,13 @@
                               <% } else { %>
                                 <p class="lead text-center">No item found in Cart</p>
                               <% } %>
-                            </div>
-                          </div>
-                        
-                      
-
-
-            <div class="cart-totals mt-4">
+                    </div>
+                </div>
+                <div class="cart-totals mt-4">
                 <h4>PRICE DETAILS</h4>
                 <p>Total: ₹<span id="total"><%= grandTotal %></span></p>
                 <a href="javascript:void(0)" class="btn-checkout" onclick="handleCheckout(<%= data.length %>)">Proceed To Checkout</a>
-            </div>
+               </div>
         </div>
     </section>
 </main>
@@ -209,11 +200,6 @@
 function roundToFixedNumber(value, fixedNumber) {
     return Math.round(value / fixedNumber) * fixedNumber;
 }
-
-
-
-
-
 
     function changeQuantity(productId, currentQuantity, count, finalPrice, productStock, maxPerPerson) {
         const quantityInput = document.getElementById('cartProductQuantity-' + productId);
