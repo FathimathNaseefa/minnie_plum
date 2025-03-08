@@ -4,6 +4,7 @@ const Brand = require('../../models/brandSchema');
 const Swal = require('sweetalert2');
 const Offer = require('../../models/offerSchema');
 require('dotenv').config();
+
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const User = require('../../models/userSchema');
@@ -19,17 +20,28 @@ const pageNotFound = async (req, res) => {
 const loadHomepage = async (req, res) => {
   try {
     const user = req.session.user;
+    let userData = null;
+
     if (user) {
-      const userData = await User.findOne({ _id: user });
-      res.render('home', { user: userData });
-    } else {
-      return res.render('home');
+      userData = await User.findById(user);
     }
+
+    // Fetch limited products for homepage display
+    const products = await Product.find({ isBlocked: false, status: 'Available' })
+      .sort({ createdOn: -1 }) // Show latest products first
+      .limit(8) // Adjust limit as needed
+      .select('productName salePrice productImage brand') // Include brand field
+      .populate('brand', 'brandName') // Populate brandName field
+      .lean();
+
+    res.render('home', { user: userData, products });
   } catch (error) {
-    console.log('Home page not found', error);
+    console.error('Error loading homepage:', error);
     res.status(500).send('Server error');
   }
 };
+
+
 const loadSignup = async (req, res) => {
   try {
     return res.render('signup');
@@ -80,6 +92,7 @@ const securePassword = async (password) => {
 const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 10).toUpperCase(); // Generates a random 8-character code
 };
+
 
 // Referral Bonus Amount
 const REFERRAL_BONUS = 50;
