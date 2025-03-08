@@ -10,45 +10,45 @@
 
     <style>
         .breadcrumb {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    list-style: none;
-    padding: 10px 20px;
-    margin: 0;
-    background-color: #f8f9fa; 
-    border-radius: 5px; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-    font-size: 0.9rem;
-}
+           display: flex;
+           align-items: center;
+           justify-content: start;
+           list-style: none;
+           padding: 10px 20px;
+           margin: 0;
+           background-color: #f8f9fa; 
+           border-radius: 5px; 
+           box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+           font-size: 0.9rem;
+        }
 
-.breadcrumb-item {
-    color: #6c757d; 
-    margin-right: 10px; 
-    font-weight: 500; 
-}
+        .breadcrumb-item {
+           color: #6c757d; 
+           margin-right: 10px; 
+           font-weight: 500; 
+        }
 
-.breadcrumb-item a {
-    text-decoration: none;
-    color: #007bff; 
-    transition: color 0.2s ease-in-out;
-}
+        .breadcrumb-item a {
+           text-decoration: none;
+           color: #007bff; 
+           transition: color 0.2s ease-in-out;
+        }
 
-.breadcrumb-item a:hover {
-    color: #0056b3; 
-}
+        .breadcrumb-item a:hover {
+            color: #0056b3; 
+        }
 
-.breadcrumb-item + .breadcrumb-item::before {
-    content: '>'; 
-    margin-right: 10px;
-    color: #6c757d; 
-}
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: '>'; 
+            margin-right: 10px;
+            color: #6c757d; 
+        }
 
-.breadcrumb-item.active {
-    color: #495057; 
-    font-weight: bold;
-    pointer-events: none; 
-}
+        .breadcrumb-item.active {
+            color: #495057; 
+            font-weight: bold;
+            pointer-events: none; 
+        }
 
         .recommendation-section img {
             width: 150px;
@@ -113,62 +113,55 @@
             width: 100px;
         }
         /* Container for the quantity section */
-.quantity-container {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
+        .quantity-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-/* Style the input field */
-#quantity {
-    width: 50px;
-    height: 35px;
-    text-align: center;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-}
+        /* Style the input field */
+         #quantity {
+            width: 50px;
+            height: 35px;
+            text-align: center;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
 
-/* Remove number input spinner */
-#quantity::-webkit-outer-spin-button,
-#quantity::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
+        /* Remove number input spinner */
+        #quantity::-webkit-outer-spin-button,
+        #quantity::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+         }
 
-/* Style buttons */
-.quantity-container button {
-    width: 35px;
-    height: 35px;
-    font-size: 18px;
-    font-weight: bold;
-    background-color: #28a745; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
+        /* Style buttons */
+        .quantity-container button {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #28a745; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
 
-/* Hover effect */
-.quantity-container button:hover {
-    background-color: #218838;
-}
+        /* Hover effect */
+        .quantity-container button:hover {
+            background-color: #218838;
+        }
 
-/* Disabled button */
-.quantity-container button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
+        /* Disabled button */
+         .quantity-container button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
 
-
-        
-        
-        
-
-        
-        
     </style>
 </head>
 <body>
@@ -184,12 +177,6 @@
     
     <div class="container mt-4">
         <div class="row">
-            
-
-
-
-
-
              <div class="offset-md-1 col-md-4">
                 <div class="text-center">
                     <img id="zoomImage" src="/uploads/re-image/<%= product.productImage[0] %>" 
@@ -206,17 +193,7 @@
                         <% } %>
                     </div>
                 </div>
-                
-                
-                
             </div>
-            
-
-
-
-
-
-
             <!-- Product Information Section -->
             <div class="col-md-7 product-info">
                 <div class="d-flex justify-content-between align-items-center">
@@ -226,9 +203,7 @@
                         class="<%= user && user.wishlist && user.wishlist.includes(product._id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart' %>"
                         onclick="toggleWishlist('<%= product._id %>')">
                      </i>
-                     
-                </button>
-            </div>
+                </div>
             <div class="rating">
                 <p><strong>Rating: 4/5</strong></p> 
                 <div>
@@ -244,7 +219,6 @@
             <!-- Reviews -->
             <div class="reviews">
                 <p><strong>12 Customer Reviews</strong></p>
-                
             </div>
     
                 
@@ -269,110 +243,63 @@
         </p>
                 
                 
-                
-                
-                <p><strong>Category:</strong> <%= category.name%></p>
-                
-                
-
-
-
-
-
-                <p><strong>Description:</strong> <%= product.description %></p>
-
-                
-                <div class="product-detail">
-                    
-                        
-                         <p><strong>Status: <%= product.status %></strong></p>
-                         <% if (typeof product.stock!=="undefined" && product.stock > 0) { %>
-                             <p class="stock-status text-success">In Stock (<%= product.stock %> available)</p>
-                         <% } else  { %>
-                             <p class="stock-status text-danger">Out of Stock</p>
-                         <% } %>
-                         
-
-                         
-                </div> 
+        <p><strong>Category:</strong> <%= category.name%></p>
+        <p><strong>Description:</strong> <%= product.description %></p>
+        <div class="product-detail">
+            <p><strong>Status: <%= product.status %></strong></p>
+                <% if (typeof product.stock!=="undefined" && product.stock > 0) { %>
+                    <p class="stock-status text-success">In Stock (<%= product.stock %> available)</p>
+                <% } else  { %>
+                    <p class="stock-status text-danger">Out of Stock</p>
+                <% } %>
+        </div> 
         
 
-                    
-                            
-                            
-                    
-                                   <div class="quantity-container" style="width: 100px;">
-                                    
-                                 <button onclick="changeQuantity(-1)">-</button>
-
-                                 <input type="number" id="quantity" value="1" data-max-stock="<%= product.stock %>">
-                                 <button onclick="changeQuantity(1)">+</button>
-                                
+        <div class="quantity-container" style="width: 100px;">
+            <button onclick="changeQuantity(-1)">-</button>
+               <input type="number" id="quantity" value="1" data-max-stock="<%= product.stock %>">
+            <button onclick="changeQuantity(1)">+</button>
+        </div>                        
 
                                  
-                               
-</div>
-
-                                <p><strong>Color:</strong></p>
-                 <div>
-                     <% if (Array.isArray(product.color)) { %>
-                         <% product.color.forEach(color => { %>
-                             <label>
-                                 <input type="radio" name="selectedColor" value="<%= color %>" required>
-                                 <%= color %>
-                             </label>
+        <p><strong>Color:</strong></p>
+        <div>
+            <% if (Array.isArray(product.color)) { %>
+                <% product.color.forEach(color => { %>
+                    <label>
+                        <input type="radio" name="selectedColor" value="<%= color %>" required>
+                        <%= color %>
+                    </label>
                          <% }); %>
-                     <% } else { %>
-                         <p><%= product.color %></p>
+            <% } else { %>
+                    <p><%= product.color %></p>
                      <% } %>
-                 </div>
+        </div>
 
 
-                 
-
-                 
-                 <p><strong>Size:</strong></p>
-                 <div>
-                     <% if (Array.isArray(product.size)) { %>
-                         <select id="selectedSize"  class="form-control" required>
-                             <option value="">Select Size</option>
+        <p><strong>Size:</strong></p>
+            <div>
+                <% if (Array.isArray(product.size)) { %>
+                    <select id="selectedSize"  class="form-control" required>
+                            <option value="">Select Size</option>
                              <% product.size.forEach(size => { %>
                                  <option value="<%= size %>"><%= size %></option>
                              <% }); %>
-                         </select>
-                     <% } else { %>
+                    </select>
+                <% } else { %>
                          <p><%= product.size %></p>
-                     <% } %>
-                 </div>
+                <% } %>
+            </div>
                  
             
+            <!-- Add to Cart and Buy Now Buttons -->
+           <button id="addToCartBtn" class="btn btn-primary mt-3" onclick="addToCart('<%= product._id %>',<%= product.stock %>)">
+           Add to Cart
+           </button>
 
-                                
-                
-
-                 <!-- Add to Cart and Buy Now Buttons -->
-
-    <button id="addToCartBtn" class="btn btn-primary mt-3" onclick="addToCart('<%= product._id %>',<%= product.stock %>)">
-        Add to Cart
-    </button>
-
-    <button class="btn btn-outline-primary mt-3">
-        <a href="/cart" style="text-decoration: none;">Go to Cart</a>
-    </button>
-
-
-
-
-
-
-
-                
-                
-                
-                
-
-
-
+           <button class="btn btn-outline-primary mt-3">
+           <a href="/cart" style="text-decoration: none;">Go to Cart</a>
+           </button>
 
             <br><br>
             <div class="highlights">
@@ -392,43 +319,34 @@
         </div>
     </div></div></div>
 
-    
-    
-
-    
-    
-    
     <br><br><h4>Recommended Products</h4><br>
     <div class="row">
-      <% recommendedProducts.forEach(function(recommendedProduct) { %>
-        <div class="col-md-3 px-4 ">
-            <div class="card" style="display: flex;justify-content: center;align-items: center;background-color: rgb(240, 234, 234);">
-                <img src="/uploads/re-image/<%=recommendedProduct.productImage[0]%>" class="card-img-top" alt="rec" style="height:250px;object-fit: cover;">
-                   <div class="card-body">
-                    <h6 class="card-title"><%=recommendedProduct.productName%></h6>
-                    <p class="card-text">rs<%=recommendedProduct.salePrice%></p>
-                    <a href="/product-details?id=<%=recommendedProduct._id%>" class="btn btn-primary">View product</a>
-                   </div>
-                   </div>
-                   </div>
-      <% }); %>
+        <% recommendedProducts.forEach(function(recommendedProduct) { 
+          let finalPrice = recommendedProduct.salePrice;
+          if (recommendedProduct.discountPercent > 0) {
+            finalPrice = recommendedProduct.salePrice - (recommendedProduct.salePrice * recommendedProduct.discountPercent / 100);
+          }
+        %>
+          <div class="col-md-3 px-4">
+            <div class="card" style="display: flex; justify-content: center; align-items: center; background-color: rgb(240, 234, 234);">
+              <img src="/uploads/re-image/<%= recommendedProduct.productImage[0] %>" class="card-img-top" alt="rec" style="height:250px; object-fit: cover;">
+              <div class="card-body">
+                <h6 class="card-title"><%= recommendedProduct.productName %></h6>
+                <a href="/productDetails?id=<%= recommendedProduct._id %>" class="btn btn-primary">View product</a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
     </div>
-</div>
 
 </section>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  
-  
+ 
 <script>
-
-
-
-
-
     $(document).ready(function() {
         // Initialize ElevateZoom
         $("#zoomImage").elevateZoom({
@@ -473,14 +391,6 @@ function changeQuantity(amount) {
 
     quantityInput.value = currentQuantity;
 }
-
-
-
-
-
-
-
-
 
 function addToCart(productId, stock) {
     const selectedSize = document.getElementById("selectedSize").value;
@@ -546,13 +456,6 @@ function addToCart(productId, stock) {
     });
 }
 
-
-
-
-
-
-
-
 function toggleWishlist(productId) {
     fetch(`/wishlist/add/${productId}`, { method: 'POST' })
     .then(response => response.json())
@@ -596,10 +499,7 @@ function showPopup(message) {
     }, 2000);
 }
 
-
-
-
-     </script>
+</script>
 
 
 </body>
