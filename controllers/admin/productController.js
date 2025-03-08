@@ -20,6 +20,8 @@ const getProductAddPage = async (req, res) => {
   }
 };
 
+
+
 const addProducts = async (req, res) => {
   try {
     const products = req.body;
@@ -46,34 +48,40 @@ const addProducts = async (req, res) => {
         }
       }
 
+      // ✅ Convert category name to ObjectId
       const categoryId = await Category.findOne({ name: products.category });
       if (!categoryId) {
         return res.status(400).json('Invalid category name');
       }
+
+      // ✅ Convert brand name to ObjectId
+      const brandId = await Brand.findOne({ brandName: new RegExp('^' + products.brand + '$', 'i') });
+console.log("Found brand:", brandId); // Debugging
+
+if (!brandId) {
+  return res.status(400).json('Invalid brand name');
+}
+
 
       const status = products.quantity <= 0 ? 'Soldout' : 'Available';
 
       const newProduct = new Product({
         productName: products.productName,
         description: products.description,
-        brand: products.brand,
-        category: categoryId._id,
+        brand: brandId._id, // ✅ Store ObjectId
+        category: categoryId._id, // ✅ Store ObjectId
         regularPrice: products.regularPrice,
         salePrice: products.salePrice,
         createdOn: new Date(),
         quantity: products.quantity,
-        stock: products.quantity, // ✅ Add this line
+        stock: products.quantity,
         size: Array.isArray(products.size) ? products.size : [products.size],
-        color: Array.isArray(products.color)
-          ? products.color
-          : [products.color],
+        color: Array.isArray(products.color) ? products.color : [products.color],
         productImage: images,
         status: status,
-        maxPerPerson: products.maxPerPerson || 5, // Fixed undefined error
+        maxPerPerson: products.maxPerPerson || 5,
         highlights: products.highlights ? products.highlights.split(',') : [],
-        specifications: products.specifications
-          ? JSON.parse(products.specifications)
-          : {},
+        specifications: products.specifications ? JSON.parse(products.specifications) : {},
       });
 
       await newProduct.save();
@@ -88,6 +96,9 @@ const addProducts = async (req, res) => {
     return res.redirect('/admin/pageerror');
   }
 };
+
+
+
 
 const getAllProducts = async (req, res) => {
   try {
@@ -227,21 +238,31 @@ const getEditProduct = async (req, res) => {
   }
 };
 
+
 const editProduct = async (req, res) => {
   try {
     const id = req.params.id;
     const product = await Product.findOne({ _id: id });
     const data = req.body;
+
+    // ✅ Check if the product name already exists (excluding the current one)
     const existingProduct = await Product.findOne({
       productName: data.productName,
       _id: { $ne: id },
     });
     if (existingProduct) {
       return res.status(400).json({
-        error:
-          'Product with this name already exists.Please try with another name',
+        error: 'Product with this name already exists. Please try another name.',
       });
     }
+
+    // ✅ Convert Brand Name to ObjectId
+    const brandData = await Brand.findOne({ brandName: new RegExp('^' + data.brand + '$', 'i') });
+    if (!brandData) {
+      return res.status(400).json({ error: 'Invalid brand name' });
+    }
+
+    // ✅ Prepare Image Updates
     const images = [];
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
@@ -249,20 +270,24 @@ const editProduct = async (req, res) => {
       }
     }
 
+    // ✅ Prepare Update Fields
     const updateFields = {
       productName: data.productName,
       description: data.description,
-      brand: data.brand,
+      brand: brandData._id,  // ✅ Save as ObjectId
       category: product.category,
       regularPrice: data.regularPrice,
       salePrice: data.salePrice,
       quantity: data.quantity,
-      size: data.size,
-      color: data.color,
+      size: Array.isArray(data.size) ? data.size : [data.size],
+      color: Array.isArray(data.color) ? data.color : [data.color],
     };
+
+    // ✅ Append new images if uploaded
     if (req.files.length > 0) {
       updateFields.$push = { productImage: { $each: images } };
     }
+
     await Product.findByIdAndUpdate(id, updateFields, { new: true });
     res.redirect('/admin/products');
   } catch (error) {
@@ -270,6 +295,7 @@ const editProduct = async (req, res) => {
     res.redirect('/pageerror');
   }
 };
+
 
 const deleteSingleImage = async (req, res) => {
   try {
