@@ -23,9 +23,6 @@
     font-size: 0.9rem;
 }
 
-
-
-
 .breadcrumb-item {
     color: #6c757d; /* Default gray text */
     margin-right: 10px; /* Space between items */
@@ -52,6 +49,12 @@
     color: #495057; /* Dark gray for the current page */
     font-weight: bold;
     pointer-events: none; /* Make the active page unclickable */
+}
+h1{
+    text-align: center;
+}
+.table{
+    margin: auto; text-align: center; width: 80%;
 }
     
     /* Table Header */
@@ -110,10 +113,50 @@
             font-size: 12px;
         }
     }
+    .pagination {
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Align items in the center */
+    gap: 10px;                /* Add space between elements */
+    margin-top: 20px;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 10px 15px;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #0056b3;
+}
+
+.pagination .current-page {
+    
+    font-size: 16px;
+}
+
+.pagination a.active {
+    background-color: #0056b3;
+
+}
+
+.pagination a:hover {
+    background-color: #0056b3;
+}
+
+.prev-btn, .next-btn {
+    font-weight: bold;
+}
+
 </style>   
 
 
-<h1>Inventory</h1>
+<h1 >Inventory</h1>
 <table class="table">
     <thead>
       <tr>
@@ -136,11 +179,83 @@
               <input type="hidden" name="productId" value="<%= item._id %>">
               <input type="number" name="newStock" min="0" value="<%= item.stock %>">
               <button type="submit" class="btn btn-primary">Update</button>
-            </form>
+            </form> 
+            
+            
           </td>
         </tr>
       <% }); %>
     </tbody>
   </table>
+  
+  <script>
+    
+   document.addEventListener("DOMContentLoaded", function () {
+    const rowsPerPage = 5; // Change as needed
+    const rows = document.querySelectorAll("tbody tr");
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
+    let currentPage = 1;
+
+    function showPage(page) {
+        rows.forEach((row, index) => {
+            row.style.display = (index >= (page - 1) * rowsPerPage && index < page * rowsPerPage) ? "table-row" : "none";
+        });
+    }
+
+    function createPagination() {
+        const paginationDiv = document.createElement("div");
+        paginationDiv.classList.add("pagination");
+
+        const prevBtn = document.createElement("a");
+        prevBtn.href = "#";
+        prevBtn.textContent = "Previous";
+        prevBtn.classList.add("prev-btn");
+        prevBtn.style.display = currentPage === 1 ? "none" : "inline-block";
+        prevBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                updatePagination();
+            }
+        });
+
+        const pageInfo = document.createElement("span");
+        pageInfo.classList.add("current-page");
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+        const nextBtn = document.createElement("a");
+        nextBtn.href = "#";
+        nextBtn.textContent = "Next";
+        nextBtn.classList.add("next-btn");
+        nextBtn.style.display = currentPage === totalPages ? "none" : "inline-block";
+        nextBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePagination();
+            }
+        });
+
+        paginationDiv.appendChild(prevBtn);
+        paginationDiv.appendChild(pageInfo);
+        paginationDiv.appendChild(nextBtn);
+
+        document.querySelector(".table").after(paginationDiv);
+    }
+
+    function updatePagination() {
+        showPage(currentPage);
+        document.querySelector(".current-page").textContent = `Page ${currentPage} of ${totalPages}`;
+
+        document.querySelector(".prev-btn").style.display = currentPage === 1 ? "none" : "inline-block";
+        document.querySelector(".next-btn").style.display = currentPage === totalPages ? "none" : "inline-block";
+    }
+
+    showPage(currentPage);
+    if (totalPages > 1) createPagination();
+});
+
+</script>
+
   <%- include("../../views/partials/admin/footer") %>
   
