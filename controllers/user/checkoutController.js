@@ -335,10 +335,11 @@ const orderSuccess = async (req, res) => {
   }
 };
 
+
+
+
 const createOrder = async (req, res) => {
   try {
-    console.log('🛒 Incoming Order Data:', req.body);
-
     const {
       addressId,
       paymentMethod,
@@ -347,6 +348,10 @@ const createOrder = async (req, res) => {
       pdtOffer,
       catOffer,
     } = req.body;
+    console.log("📦 Address ID received:", addressId);
+    const selectedAddress = await UserAddress.findById(addressId);
+    console.log("🔹 Selected Address Before Saving:", selectedAddress);
+    
     const userId = req.session.user;
 
     if (!userId) return res.status(400).json({ message: 'User not logged in' });
@@ -453,11 +458,16 @@ const createOrder = async (req, res) => {
           'Cash on Delivery (COD) is not available for orders above ₹1000. Please choose another payment method.',
       });
     }
+     // Fetch from useraddresses
+if (!selectedAddress) {
+    return res.status(400).json({ message: 'Invalid shipping address.' });
+}
+console.log('🛑 Selected Address Before Saving:', selectedAddress)
 
     const newOrder = new Order({
       orderId: uniqueOrderId,
       userId: userId,
-      shippingAddress: addressId,
+      shippingAddress: selectedAddress,
       paymentMethod: paymentMethod,
       items: cart.map((item) => ({
         productId: item.productId._id,
@@ -499,6 +509,11 @@ const createOrder = async (req, res) => {
     return res.status(500).json({ status: false, error: 'Server error' });
   }
 };
+
+
+
+
+
 
 const applyCoupon = async (req, res) => {
   try {
