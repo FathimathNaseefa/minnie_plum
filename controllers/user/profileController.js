@@ -25,7 +25,7 @@ const sendVerificationEmail = async (email, otp) => {
       secure: false,
       requireTLS: true,
       auth: {
-        user: process.env.USER ,
+        user: process.env.USER,
         pass: process.env.PASS,
       },
     });
@@ -647,7 +647,6 @@ module.exports = {
   resendOtp,
   postNewPassword,
   getUpdatePage,
-
   userProfile,
   changeEmail,
   changeEmailValid,
@@ -664,5 +663,6 @@ module.exports = {
   editAddress,
   postEditAddress,
   deleteAddress,
-  // cancelOrder,
+  
 };
+
