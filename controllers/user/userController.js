@@ -3,7 +3,7 @@ const Product = require('../../models/productSchema');
 const Brand = require('../../models/brandSchema');
 const Swal = require('sweetalert2');
 const Offer = require('../../models/offerSchema');
-
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const User = require('../../models/userSchema');
