@@ -1,23 +1,21 @@
 <%- include("../../views/partials/admin/header") %>
 <head>
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+   <link  rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
 </head>
 <style>
    .error-message{
        color: red;
    }
-
-
-       .thumbnails-container {
-           display: flex;
-           overflow-x: auto;
-       }
-
-
-       .thumbnail {
-           margin-right: 10px;
-           
-       }
+  .thumbnails-container {
+        display: flex;
+        overflow-x: auto;
+    }
+  .thumbnail {
+        margin-right: 10px;
+    }
        
 </style>
    <section class="content-main" style="background-color: #fff;">
@@ -106,11 +104,7 @@
                                 <label class="form-label">Specifications (JSON format)</label>
                                 <textarea name="specifications" placeholder='{"Material":"Leather", "Warranty":"1 Year"}' class="form-control border" rows="4"></textarea>
                             </div>
-                            
-                            
-                               
-                               
-                            
+                             
                            </div>
                            <div class="card mb-4">
                                <div class="card-body">
@@ -130,8 +124,6 @@
                                </div>
                            </div>
 
-
-                           
 
                            <div class="card mb-2">
                                <div class="card-header">
@@ -210,7 +202,6 @@
            </div>
        </div>
    </section>
-<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
  <script>
     function validateAndSubmit(){
         if(validateForm()){
@@ -370,49 +361,33 @@ isValid = false;
 displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
 isValid = false;
 }
-
-
-     
-
-
-        if ( parseInt(quantity) < 0) {
+if ( parseInt(quantity) < 0) {
             displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
             isValid = false;
-        }
-
-
-
-
-        if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+}
+ if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
             displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
             isValid = false;
-        }
-
-
-
-
-        if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+}
+if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
             displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
             isValid = false;
-        }
-        if (parseFloat(price) <= parseFloat(saleprice)) {
+}
+if (parseFloat(price) <= parseFloat(saleprice)) {
 displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
 isValid = false;
 }
 
-
-        if (color.trim() === "") {
+if (color.trim() === "") {
             displayErrorMessage('color-error', 'Please enter a color.');
             isValid = false;
-        }
-
-
-        if (images.files.length === 0) {
+}
+ if (images.files.length === 0) {
             displayErrorMessage("images-error",'Please select an image.');
             isValid = false;
-        }
-        return isValid;
-    }
+}
+return isValid;
+}
 
 
     function displayErrorMessage(elementId, message) {
@@ -428,15 +403,7 @@ isValid = false;
             element.innerText = '';
         });
         const errorMessage = document.getElementById('errorMessage');
-
-
-    }
-    
-    
-    
-  
-
+ }
+ 
  </script>    
-<%- include("../../views/partials/admin/footer") %>
-
-
+<%- include("../../views/partials/admin/footer")%>
