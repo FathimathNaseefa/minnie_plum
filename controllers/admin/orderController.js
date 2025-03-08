@@ -303,10 +303,11 @@ const returnStatus = async (req, res) => {
 
     console.log('✅ Order updated:', updatedOrder);
 
-    // ✅ If return is accepted and payment was via Razorpay, process refund
+    // ✅ If return is accepted, process refund for both Razorpay & COD payments
     if (
       status === 'Return accepted' &&
-      updatedOrder.paymentMethod === 'razorpay'
+      (updatedOrder.paymentMethod === 'razorpay' ||
+        updatedOrder.paymentMethod === 'cod')
     ) {
       const user = updatedOrder.userId;
 
