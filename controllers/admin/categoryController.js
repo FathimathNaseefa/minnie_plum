@@ -157,7 +157,7 @@ const getEditCategory = async (req, res) => {
   try {
     let id = req.query.id;
     const category = await Category.findOne({ _id: id });
-    res.render('edit-category', { category: category });
+    res.render('edit-category', { category: category ,currentPage:'addProducts'});
   } catch (error) {
     res.redirect('/pageerror');
   }
@@ -177,6 +177,8 @@ const deleteCategory = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
 const editCategory = async (req, res) => {
   try {
     const id = req.params.id;
