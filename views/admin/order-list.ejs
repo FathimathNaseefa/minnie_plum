@@ -1,13 +1,6 @@
 <%- include("../../views/partials/admin/header") %>
 <style>
-        /* General Styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 20px;
-}
-
+ 
 h3 {
     color: #333;
     text-align: center;
@@ -75,34 +68,11 @@ table td button:hover {
     opacity: 0.9;
 }
 
-/* Pagination Styles */
-div {
-    text-align: center;
-    margin-top: 20px;
-}
+ #view{
+    color:#ddd; background-color: #1a4e86; padding: 10px 20px; display: inline-block; text-align: center; width: 100px;
+ }
 
-div a {
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    text-decoration: none;
-    margin: 0 5px;
-}
-
-div a:hover {
-    background-color: #0056b3;
-}
-
-div span {
-    font-size: 16px;
-    margin: 0 10px;
-}
-
-        </style>
-
-
-    
+</style>
     
 <h3>Admin Order List</h3>
 
@@ -132,7 +102,7 @@ div span {
                     </select>
                 </td>
                 <td>
-                    <a style="color:#ddd" href="/admin/orderDetails?id=<%= order._id %>">View</a>
+                    <a id="view"  href="/admin/orderDetails?id=<%= order._id %>">View</a>
                 </td>
             </tr>
         <% }) %>
@@ -140,13 +110,14 @@ div span {
 </table>
 
 <!-- Pagination -->
-<div>
+<div style="text-align: center;
+    margin-top: 20px;text-decoration: none;">
     <% if (currentPage > 1) { %>
         <a style="padding: 8px 12px;
         background-color: #007bff;
         color: white;
         border-radius: 5px;
-        margin: 5px;" href="?page=<%= currentPage - 1 %>">Previous</a>
+        margin: 5px;text-decoration: none" href="?page=<%= currentPage - 1 %>">Previous</a>
     <% } %>
 
     Page <%= currentPage %> of <%= totalPages %>
@@ -156,7 +127,7 @@ div span {
         background-color: #007bff;
         color: white;
         border-radius: 5px;
-        margin: 5px;" href="?page=<%= currentPage + 1 %>">Next</a>
+        margin: 5px;text-decoration: none" href="?page=<%= currentPage + 1 %>">Next</a>
     <% } %>
 </div>
 
@@ -207,4 +178,6 @@ function updateStatus(orderId) {
     });
 }
 </script>
+
+
 
