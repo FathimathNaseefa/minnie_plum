@@ -304,12 +304,9 @@ table th{
                                                   <%= new Date(order.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'long', year: 'numeric' }) %>
                                               </td>
                                               
-                                                <!-- <td><%= order.paymentStatus%></td> -->
-                                                <td style="color: <%= order.paymentStatus === 'Paid' ? 'green' : 'red' %>">
-                                                  <%= order.paymentStatus %>
+                                              <td style="color: <%= order.status === 'Delivered' || order.paymentStatus === 'Paid' ? 'green' : 'red' %>">
+                                                  <%= order.status === 'Delivered' ? 'Paid' : order.paymentStatus %>
                                               </td>
-
-
                                               <td>
                                                 <span class="<%= order.status === 'Pending' ? 'text-warning' 
                                                             : (order.status === 'Cancelled' || order.status === 'Returned') ? 'text-danger' 
@@ -318,11 +315,6 @@ table th{
                                                     <%= order.status %>
                                                 </span>
                                             </td>
-                                            
-
-                                            
-
-
                                               <td>₹<%= order.totalAmount %></td>
                                               <td>
                                                   <a style="color: rgb(78, 78, 245);" href="/order-details/<%= order._id %>" class="btn btn-primary btn-sm">View Details</a>
@@ -352,33 +344,23 @@ table th{
               </div>
           </div>
 
-
-
-
-
-
-
-
-
-
                 <!-- Wallet Status Tab -->
-                <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
-                  <div class="card">
-                    <div class="card-header">
+          <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
+              <div class="card">
+                  <div class="card-header">
                       <h5 class="mb-0">Wallet Balance: ₹<%= user.wallet %></h5>
-                    </div>
-                    <div class="card-body contact-from-area">
+                  </div>
+                  <div class="card-body contact-from-area">
                       <div class="row">
-                        <div class="col-lg-8 mx-auto text-center mt-90">
-                          <form>
-                            <div class="form-group">
-                              <label for="walletAmount" class="h4">Amount:₹<%= user.wallet %></label>
-                              <div class="h3"></div>
-                            </div>
-                            <button type="button" class="btn btn-success" onclick="">Add Money</button>
-                          </form>
+                          <div class="col-lg-8 mx-auto text-center mt-90">
+                               <form>
+                                  <div class="form-group">
+                                      <label for="walletAmount" class="h4">Amount:₹<%= user.wallet %></label>
+                                      <div class="h3"></div>
+                                  </div>
+                                <button type="button" class="btn btn-success" onclick="">Add Money</button>
+                                </form>
                          
-
                         </div>
                       </div>
                     </div>
@@ -403,11 +385,7 @@ table th{
                             </tr>
                           </thead>
                           <tbody>
-                            <!-- <tr>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr> -->
+                           
                             <% if (user.walletHistory.length > 0) { %>
                               <% user.walletHistory.forEach(transaction => { %>
                                 <tr>
@@ -435,26 +413,27 @@ table th{
                     </div>
                   </div>
                 </div>
+
+
                 <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
 
-                
               <div class="card">
-                <div class="card-header">
+                 <div class="card-header">
                     <h5>Referral Program</h5>
-                </div>
-                <div class="card-body">
+                 </div>
+                 <div class="card-body">
                     <h6>Refer your friends and earn ₹50 per signup!</h6>
             
                     <p>Share this link:</p>
-                    <div class="input-group mb-3">
+                     <div class="input-group mb-3">
                         <input type="text" id="referralLink" class="form-control" 
                         value="<%= baseUrl %>/signup?ref=<%= user.referralCode %>" readonly>
                         <button class="btn btn-primary" onclick="copyReferralLink()">Copy</button>
-                    </div>
+                     </div>
             
                     <p><strong>Wallet Balance: ₹<%= user.wallet %></strong></p>
-                </div>
-            </div>
+                 </div>
+              </div>
             
               </div>
             </div>
@@ -488,26 +467,16 @@ table th{
       });
   });
 
-
-
-  
-                  
-
-                  
-
-                  
-                function copyReferralLink() {
-                    var copyText = document.getElementById("referralLink");
-                    copyText.select();
-                    document.execCommand("copy");
-                    alert("Referral link copied!");
-                }
-            
-
-
-
+   function copyReferralLink() {
+    var copyText = document.getElementById("referralLink");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Referral link copied!");
+    }
+    
   </script>
   
 <%- include("../../views/partials/user/footer") %>
+
 
 
