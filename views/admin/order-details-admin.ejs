@@ -59,40 +59,40 @@
         }
 
         .action-buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-}
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
 
-#accept-btn {
-    background-color: green;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
+        #accept-btn {
+           background-color: green;
+           color: white;
+           border: none;
+           padding: 10px 15px;
+           font-size: 16px;
+           cursor: pointer;
+           border-radius: 5px;
+           transition: background 0.3s ease;
+        }
 
-#accept-btn:hover {
-    background-color: darkgreen;
-}
+        #accept-btn:hover {
+            background-color: darkgreen;
+        }
 
-#reject-btn {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
+        #reject-btn {
+           background-color: red;
+           color: white;
+           border: none;
+           padding: 10px 15px;
+           font-size: 16px;
+           cursor: pointer;
+           border-radius: 5px;
+           transition: background 0.3s ease;
+        }
 
-#reject-btn:hover {
-    background-color: darkred;
-}
+       #reject-btn:hover {
+          background-color: darkred;
+        }
 
     </style>
 </head>
@@ -143,61 +143,7 @@
         
     </div>
     <p> Order ID: <%= orders._id %></p>
-    <!-- <script>
-    // Use _id from EJS instead of orderId
-const orderId = "<%= orders._id %>"; 
-
-// Ensure the correct URL is used
-console.log("Final Debug Order ID:", orderId);
-console.log("Fetching URL:", `/admin/orders/${orderId}/status`);
-
-function updateOrderStatus(status) {
-    fetch(`/admin/orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-    })
-    .then(response => {
-        console.log("Fetch Response:", response);
-        if (!response.ok) {
-            throw new Error(`Network response was not ok. Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Response Data:", data);
-        alert(`Return request ${status}`);
-        window.location.reload(); // Refresh page after success
-    })
-    .catch(error => {
-        console.error('Fetch Error:', error);
-        alert('An error occurred while updating the status');
-    });
-}
-
-// Attach event listeners to buttons
-document.getElementById('accept-btn').addEventListener('click', () => {
-    updateOrderStatus('Return accepted');
-});
-
-document.getElementById('reject-btn').addEventListener('click', () => {
-    updateOrderStatus('Return rejected');
-});
-
-
-
-
-
-
-
-
-
-
-
-
-</script> -->
+    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Use _id from EJS instead of orderId
