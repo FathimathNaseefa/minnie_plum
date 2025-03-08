@@ -220,16 +220,6 @@
     margin-top: 10px;
 }
 
- /* .search-form {
-    display: flex;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    overflow: hidden;
-    width: 500px;
-    background: white;
-    margin-right: 50px;
-}  */
-
  .category-dropdown {
     position: relative;
     border-right: 2px solid #ccc;
@@ -261,11 +251,6 @@
     display: none; 
     z-index: 100;
 } 
-
-
-
-
-
 
 .dropdown-menu li {
     padding: 8px 10px;
@@ -332,14 +317,10 @@
   border-right: none;
 }
 
-
-
 </style>
 
 <div class="shop-topbar">
-  
-
-
+ 
   <div class="sorting">
     <select id="sort-by" name="sort" onchange="window.location.href=this.value;">
         <option value="/shop?sort=popularity" <%= sortOption === 'popularity' ? 'selected' : '' %>>Popularity</option>
@@ -351,12 +332,8 @@
         <option value="/shop?sort=a_z" <%= sortOption === 'a_z' ? 'selected' : '' %>>A - Z</option>
         <option value="/shop?sort=z_a" <%= sortOption === 'z_a' ? 'selected' : '' %>>Z - A</option>
     </select>
-</div>
-  
-
-
-
-
+  </div>
+ 
   <form id="searchForm" method="GET" action="/live-search">
     <div class="sform">
       <select class="category" name="category" id="categorySelect">
@@ -371,7 +348,6 @@
       </button>
     </div>
   </form>
-
 </div>
 
 <!-- Filter for Out of Stock Products -->
@@ -380,34 +356,32 @@
     <input type="checkbox" id="show-out-of-stock" onchange="toggleOutOfStock()"> Show Out of Stock Products
   </label>
 </div>
-
-
-        <div class="main-container">
-          <section class="shop-page container">
-            <div class="product-list-container">
-              <aside class="sidebar">
-        <div class="filter-section">
-          <div class="filter-title">Categories</div>
-          <div class="category-brand-container">
+<div class="main-container">
+   <section class="shop-page container">
+        <div class="product-list-container">
+            <aside class="sidebar">
+                <div class="filter-section">
+                    <div class="filter-title">Categories</div>
+                    <div class="category-brand-container">
             
-            <ul style="list-style: none; padding: 0; margin: 0;">
-              <% categories.forEach(cat => { %>
-                <li class="filter-item">
-                  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" name="category" class="category-filter" value="<%= cat._id %>" 
-                      <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %>
-                      onchange="document.getElementById('filterForm').submit()">
-                    <span><%= cat.name %></span>
-                  </label>
-                </li>
-              <% }) %>
-            </ul>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                         <% categories.forEach(cat => { %>
+                            <li class="filter-item">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" name="category" class="category-filter" value="<%= cat._id %>" 
+                                <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %>
+                                onchange="document.getElementById('filterForm').submit()">
+                               <span><%= cat.name %></span>
+                               </label>
+                            </li>
+                         <% }) %>
+                        </ul>
             
-          </form>
+                      </form>
             
-          </div>
-        </div>
-      </aside>
+                    </div>
+                  </div>
+             </aside>
         
 
         
@@ -418,11 +392,11 @@
     function roundToFixedNumber(value, fixedNumber) {
         return Math.round(value / fixedNumber) * fixedNumber;
     }
-%><main class="product-grid" id="productList">
-  <% for (let i = 0; i < products.length; i++) { %>
-      <div class="product-card">
-          <span class="wishlist-btn">❤️</span>
-          <a href="/productDetails?id=<%= products[i]._id %>">
+     %><main class="product-grid" id="productList">
+      <% for (let i = 0; i < products.length; i++) { %>
+          <div class="product-card">
+              <span class="wishlist-btn">❤️</span>
+              <a href="/productDetails?id=<%= products[i]._id %>">
               <img src="/uploads/re-image/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" style="height:170px" />
               <h5><%= products[i].productName %></h5>
               <p>Brand: <%= products[i].brand.brandName %></p>
@@ -445,9 +419,6 @@
               </p>
             
           </a>
-          <!-- <button class="add-to-cart-btn">Add to Cart</button> -->
-          
-
       </div>
   <% } %>
 </main>
