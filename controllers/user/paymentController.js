@@ -14,11 +14,6 @@ const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-console.log('🔑 Razorpay Key ID:', process.env.RAZORPAY_KEY_ID);
-console.log(
-  '🔑 Razorpay Key Secret:',
-  process.env.RAZORPAY_KEY_SECRET ? 'Loaded ✅' : 'Not Loaded ❌'
-);
 
 const createRazorpayOrder = async (req, res) => {
   try {
@@ -31,25 +26,34 @@ const createRazorpayOrder = async (req, res) => {
       });
     }
 
-    // ✅ Fetch the selected address from the Address model
+    // ✅ Fetch the selected address
     const selectedAddress = await Address.findById(shippingAddressId);
-
     if (!selectedAddress) {
       return res
         .status(400)
         .json({ success: false, message: 'Invalid shipping address.' });
     }
 
-    const orderId = `order_${Date.now()}`;
+    // ✅ Fetch the user's cart from the users collection
+    const user = await User.findById(req.user.id);
+    if (!user || !user.cart || user.cart.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Your cart is empty.' });
+    }
 
+    const cartItems = user.cart; // Store cart items before clearing them
+
+    // ✅ Create Razorpay order
+    const orderId = `order_${Date.now()}`;
     const options = {
       amount: amount * 100, // Convert to paise if INR
       currency,
       receipt: orderId,
     };
-
     const order = await razorpay.orders.create(options);
 
+    // ✅ Save order with items from the cart
     const newOrder = new Order({
       userId: req.user.id,
       orderId,
@@ -58,7 +62,8 @@ const createRazorpayOrder = async (req, res) => {
       totalAmount: amount,
       currency: order.currency,
       paymentStatus: 'Pending',
-      shippingAddress: selectedAddress, // ✅ Save Address
+      shippingAddress: selectedAddress,
+      items: cartItems, // ✅ Save cart items in order
     });
 
     await newOrder.save();
@@ -69,8 +74,6 @@ const createRazorpayOrder = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
-//
 
 const verifyPayment = async (req, res) => {
   try {
@@ -193,18 +196,36 @@ const razorpayWebhookHandler = async (req, res) => {
 };
 
 const generateInvoice = (req, res) => {
-  const { orderId, amount, paymentId } = req.body;
+  const { orderId, amount, paymentId, products, discount, orderDate } =
+    req.body;
 
   const doc = new PDFDocument();
   const filePath = path.join(__dirname, `../invoices/invoice_${orderId}.pdf`);
 
   doc.pipe(fs.createWriteStream(filePath));
 
+  // Invoice Title
   doc.fontSize(18).text('Invoice', { align: 'center' });
   doc.moveDown();
+
+  // Order Details
   doc.fontSize(14).text(`Order ID: ${orderId}`);
   doc.text(`Payment ID: ${paymentId}`);
-  doc.text(`Amount: ₹${amount}`);
+  doc.text(`Order Date: ${new Date(orderDate).toLocaleString()}`);
+  doc.moveDown();
+
+  // Product Details
+  doc.fontSize(14).text('Products:', { underline: true });
+  products.forEach((product, index) => {
+    doc.text(
+      `${index + 1}. ${product.name} (Qty: ${product.quantity}) - ₹${product.price}`
+    );
+  });
+  doc.moveDown();
+
+  // Discount and Final Amount
+  doc.text(`Discount: ₹${discount}`);
+  doc.text(`Total Amount: ₹${amount}`);
   doc.text(`Date: ${new Date().toLocaleString()}`);
 
   doc.end();
@@ -237,7 +258,7 @@ const downloadInvoice = async (req, res) => {
     const { orderId } = req.params;
 
     // Fetch order details from DB
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate('items.productId'); // Populate product details
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
@@ -248,10 +269,46 @@ const downloadInvoice = async (req, res) => {
     const writeStream = fs.createWriteStream(filePath);
 
     doc.pipe(writeStream);
-    doc.text(`Invoice for Order: ${orderId}`);
-    doc.text(`Total: ${order.totalAmount}`);
+
+    // **Invoice Title**
+    doc.fontSize(18).text('MinniePlum Invoice', { align: 'center' }).moveDown();
+
+    // **Order Details**
+    doc.fontSize(14).text(`Order ID: ${orderId}`);
+    doc.text(`Order Date: ${new Date(order.createdAt).toLocaleString()}`);
+    doc.text(`Payment Method: ${order.paymentMethod}`);
+    doc.moveDown();
+
+    // **Product Details**
+    doc.fontSize(14).text('Products:', { underline: true });
+    order.items.forEach((item, index) => {
+      const productName = item.productId
+        ? item.productId.productName
+        : 'Product not found';
+      doc.text(
+        `${index + 1}. ${productName} (Qty: ${item.quantity}) - ₹${item.price}`
+      );
+    });
+    doc.moveDown();
+
+    // **Discount and Final Amount**
+    doc.text(`Discount: ₹${order.discount || 0}`);
+    doc.text(`Total Amount: ₹${order.totalAmount}`);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`);
+    doc.moveDown(2);
+
+    // **Thank You Message**
+    doc
+      .fontSize(16)
+      .font('Helvetica-Bold')
+      .text('Thank you for your purchase!', {
+        align: 'center',
+        underline: true,
+      });
+
     doc.end();
 
+    // Send the file to the client
     writeStream.on('finish', () => {
       res.download(filePath);
     });
@@ -354,9 +411,7 @@ module.exports = {
   generateInvoice,
   downloadInvoice,
   updatePaymentStatus,
-
   rePayment,
-
   paymentFailed,
   razorpayWebhookHandler,
   paymentSuccess,
