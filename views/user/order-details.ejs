@@ -1,7 +1,5 @@
 <%- include("../../views/partials/user/header") %>
 
-
-
 <div>
 <main class="container mt-5" style="background-color: rgb(250, 167, 195);">
     <h2>Order Details</h2>
@@ -11,11 +9,17 @@
             day: 'numeric', month: 'long', year: 'numeric'
         }) %></h4>
         <p><strong>Order Number:</strong> <%= order._id %></p>
-
+        <% order.items.forEach(item => { %>
+            <p><strong>Product Name:</strong> <%= item.productId ? item.productId.productName : 'Product not found' %></p>
+            <p><strong>Category Name:</strong> <%= item.productId && item.productId.category ? item.productId.category.name : 'Category not found' %></p>
+        <% }) %>
         <hr>
 
         
-        <button onclick="downloadInvoice('<%= order._id %>')">Download Invoice</button> 
+        
+        <% if (order.status === "Delivered") { %>
+            <button onclick="downloadInvoice('<%= order._id %>')">Download Invoice</button>
+        <% } %>
        
         <h4>Shipping Address</h4>
 <% 
@@ -42,8 +46,6 @@
     <%= shippingAddress.country %> <br>
     Phone: <%= shippingAddress.phoneNumber %>
 </p>
-
-
 
         <hr>
 
@@ -85,8 +87,6 @@
         </table>
 
         <hr>
-
-        
 
         <hr>
 
