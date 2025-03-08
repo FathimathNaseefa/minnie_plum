@@ -1,7 +1,8 @@
 const Coupon = require('../../models/couponSchema');
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
-const mongoose = require('mongoose');
+
+
 
 const listCoupons = async (req, res) => {
   try {
@@ -13,7 +14,9 @@ const listCoupons = async (req, res) => {
   }
 };
 
+
 const getAddCouponPage = async (req, res) => {
+
   try {
     const categories = await Category.find();
     const products = await Product.find();
@@ -80,9 +83,11 @@ const deleteCoupon = async (req, res) => {
   }
 };
 
+
 module.exports = {
   listCoupons,
   getAddCouponPage,
   createCoupon,
   deleteCoupon,
 };
+
