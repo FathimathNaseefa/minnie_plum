@@ -13,16 +13,16 @@ const wishlistController = require('../controllers/user/wishlistController');
 const walletController = require('../controllers/user/walletController');
 const referralController = require('../controllers/user/referrralController');
 
+
+
+//user management
 router.get('/pageNotFound', userController.pageNotFound);
 router.get('/', userController.loadHomepage);
 router.get('/logout', userController.logout);
-
 router.get('/shop', userController.loadShoppingPage);
 router.post('/filter', userController.filterProduct);
 router.get('/filterPrice', userController.filterByPrice);
-// router.post("/search",userController.searchProducts)
 router.get('/live-search', userController.searchProducts);
-
 router.get('/signup', userController.loadSignup);
 router.post('/signup', userController.signup);
 router.post('/verify-otp', userController.verifyOtp);
@@ -44,6 +44,8 @@ router.get(
 
 router.get('/login', userController.loadLogin);
 router.post('/login', userController.login);
+
+
 
 //profile management
 router.get('/forgot-password', profileController.getForgotPassPage);
@@ -76,13 +78,17 @@ router.post(
   profileController.resendChangePassOtp
 );
 
+
+
 //address management
 router.get('/addAddress', userAuth, profileController.addAddress);
 router.post('/addAddress', userAuth, profileController.postAddAddress);
 router.get('/editAddress', userAuth, profileController.editAddress);
 router.post('/editAddress', userAuth, profileController.postEditAddress);
 router.get('/deleteAddress', userAuth, profileController.deleteAddress);
-// router.post("/cancel-order", userAuth,profileController.cancelOrder)
+
+
+
 
 //cart management
 router.get('/cart', userAuth, cartController.getCartPage);
@@ -90,6 +96,8 @@ router.post('/addToCart', userAuth, cartController.addToCart);
 router.post('/changeQuantity', userAuth, cartController.changeQuantity);
 router.get('/deleteItem', userAuth, cartController.deleteProduct);
 
+
+//checkout management
 router.get('/checkout', userAuth, checkoutController.getCheckoutPage);
 router.post('/checkout/addAddress', userAuth, checkoutController.addAddress);
 router.get(
@@ -99,7 +107,6 @@ router.get(
 );
 
 router.post('/checkout/editAddress', userAuth, checkoutController.editAddress);
-// router.post("/checkout/deleteAddress", userAuth, checkoutController.deleteAddress);
 router.post('/checkout/createOrder', userAuth, checkoutController.createOrder);
 router.post(
   '/checkout/setDefaultAddress',
@@ -112,14 +119,14 @@ router.get(
   checkoutController.orderSuccess
 );
 
-//order management
-router.get('/order-details/:id', userAuth, orderController.orderDetails);
-router.post('/update-status', userAuth, orderController.updateOrderStatus);
 
+
+//order management
+router.get('/order-details/:id', orderController.orderDetails);
+router.post('/update-status', userAuth, orderController.updateOrderStatus);
 router.get('/cancel-order/:orderId', orderController.getCancelOrder);
 router.get('/return-order/:orderId', orderController.getReturnOrder);
 router.post('/cancel-order', userAuth, orderController.cancelOrder);
-
 router.post('/return-order', userAuth, orderController.returnOrder);
 
 router.post(
@@ -133,9 +140,11 @@ router.post(
   orderController.confirmCancelOrder
 );
 
+
+//razorpay payment
 router.post(
-  '/create-razorpayorder',
-  userAuth,
+  '/create-razorpayorder',userAuth,
+  
   paymentController.createRazorpayOrder
 );
 router.post('/verify-payment', userAuth, paymentController.verifyPayment);
@@ -146,17 +155,18 @@ router.get(
   paymentController.downloadInvoice
 );
 
-// Example webhook/callback handler for Razorpay payment confirmation
-//router.post("/webhook/razorpay", express.raw({ type: "application/json" }), paymentController.razorpayWebhookHandler);
 router.post('/webhook/razorpay', paymentController.razorpayWebhookHandler);
 router.post('/payment-failed', userAuth, paymentController.paymentFailed);
 router.post('/update-payment-status', paymentController.updatePaymentStatus);
 router.get('/retry-payment/:orderId', paymentController.rePayment);
 router.get('/payment-success', paymentController.paymentSuccess);
 
-//coupon
+
+
+//coupon in checkout
 router.post('/apply-coupon', userAuth, checkoutController.applyCoupon);
 router.post('/remove-coupon', userAuth, checkoutController.removeCoupon);
+
 
 //wishlist
 router.post(
@@ -172,9 +182,13 @@ router.post(
 router.get('/wishlist', userAuth, wishlistController.getWishlist);
 router.post('/wishlist/toggle', userAuth, wishlistController.toggle);
 
+
+
 //wallet
 router.post('/addMoney', userAuth, walletController.addMoneyToWallet);
 router.post('/verify-payment', userAuth, walletController.verify_payment);
+
+
 
 //referral offer
 router.post('/apply-referral', referralController.applyReferral);
@@ -187,5 +201,8 @@ router.post(
   '/admin/deactivate-referral-offer',
   referralController.deactivateReferralOffer
 );
+
+
+
 
 module.exports = router;
