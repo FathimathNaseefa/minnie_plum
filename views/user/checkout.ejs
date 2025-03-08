@@ -185,6 +185,36 @@
         margin-bottom: 10px;
         display: block;
     }
+
+    #removeCouponBtn {
+       background-color: #ff4d4d; /* Red color to indicate removal */
+       color: white;
+       border: none;
+       padding: 10px 15px;
+       font-size: 14px;
+       cursor: pointer;
+       border-radius: 5px;
+       transition: background-color 0.3s ease-in-out;
+    }
+
+    #removeCouponBtn:hover {
+       background-color: #cc0000; /* Darker red on hover */
+    }
+     #applyCouponBtn{
+       background-color: #217945; /* Red color to indicate removal */
+       color: white;
+       border: none;
+       padding: 10px 15px;
+       font-size: 14px;
+       cursor: pointer;
+       border-radius: 5px;
+       transition: background-color 0.3s ease-in-out;
+    }
+
+    #applyCouponBtn:hover {
+       background-color: #cc0000; /* Darker red on hover */
+    }
+
 </style>
 
 <div class="checkout-container">
@@ -196,7 +226,7 @@
         <a href="#" onclick="openAddressModal()" style="color: #007185; text-decoration: none;">Change</a> | 
         <a href="#" style="color: #007185; text-decoration: none;">Add delivery instructions</a>
 
-        <!-- Address Selection Modal -->
+        
         <div id="addressModal" class="modal">
             <div class="modal-content">
                 <h3>Select Delivery Address</h3>
@@ -216,7 +246,8 @@
                 <% }); %>
                 <button onclick="closeAddressModal()">Done</button>
             </div>
-        </div>
+        </div> 
+
         <input type="hidden" id="selectedAddressId" value="<%= defaultAddress ? defaultAddress._id : '' %>">
 
 
@@ -258,18 +289,12 @@
             <input type="radio" name="payment" value="razorpay" id="razorpay-option" required>
             <label for="razorpay-option">Pay with Razorpay</label><br>
         </div>
-
-        <input type="hidden" id="totalAmount" value="<%= totalAmount %>">
-
+       <input type="hidden" id="totalAmount" value="<%= totalAmount %>">
     </div>
 
-    
-         
-
-
-             <div class="right-section">
-                <h3>Order Summary</h3>
-                <div class="order-summary">
+    <div class="right-section">
+        <h3>Order Summary</h3>
+            <div class="order-summary">
                     <p>Original Total: ₹<%= roundToFixedNumber(originalTotal, 10).toLocaleString('en-IN') %></p>
                     <p>Product Offers: ₹<%= roundToFixedNumber(productOffers.reduce((sum, offer) => sum + offer.discountValue, 0), 10).toLocaleString('en-IN') %></p>
                     <p>Category Offers: ₹<%= roundToFixedNumber(categoryOffers.reduce((sum, offer) => sum + offer.discountValue, 0), 10).toLocaleString('en-IN') %></p>
@@ -277,115 +302,63 @@
                     <p>Delivery: ₹0</p>
                     <p>Cash/Pay on Delivery Fee: ₹0</p>
                     <h3>Order Total: ₹<%= roundToFixedNumber(totalAmount, 10).toLocaleString('en-IN') %></h3>
-                </div>
-            
-        
-        
-        
-        
-        <form id="orderForm" action="/checkout/createOrder" method="POST" onsubmit="return handlePayment(event)">
-            <input type="hidden" id="selectedAddressId" name="addressId" value="<%= defaultAddress ? defaultAddress._id : '' %>">
-            <input type="hidden" name="paymentMethod" id="selectedPaymentMethod">
-            <input type="hidden" id="appliedCoupon" name="appliedCoupon"> 
-            <input type="hidden" id="productOfferDiscount" name="productOfferDiscount" value="0">
-            <input type="hidden" id="categoryOfferDiscount" name="categoryOfferDiscount" value="0">
-
-            <input type="hidden" id="discountAmount" name="discountAmount" value="0">
-        
-            <button type="submit" class="submit-btn">Place Order</button>
-        
-        </form>
+            </div>
+            <form id="orderForm" action="/checkout/createOrder" method="POST" onsubmit="return handlePayment(event)">
+             <!-- <input type="hidden" id="selectedAddressId" name="addressId" value="<%= defaultAddress ? defaultAddress._id : '' %>"> -->
+             <input type="hidden" name="addressId" id="selectedAddressId" value="<%= defaultAddress ? defaultAddress._id : '' %>">
+             <input type="hidden" name="paymentMethod" id="selectedPaymentMethod">
+             <input type="hidden" id="appliedCoupon" name="appliedCoupon"> 
+             <input type="hidden" id="productOfferDiscount" name="productOfferDiscount" value="0">
+             <input type="hidden" id="categoryOfferDiscount" name="categoryOfferDiscount" value="0">
+             <input type="hidden" id="discountAmount" name="discountAmount" value="0">
+             <button type="submit" class="submit-btn">Place Order</button>
+            </form>
     </div>
 </div>
 
 
-
-
-
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-document.getElementById("razorpay-option").addEventListener("click", async () => {
-  const amount = document.getElementById("totalAmount").value;
-  
-  const response = await fetch("/payment/create-razorpayorder", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount, currency: "INR" }),
-  });
-
-  const data = await response.json();
-
-  if (data.success) {
-    const options = {
-      key: process.env.RAZORPAY_KEY_ID,
-      amount: data.order.amount,
-      currency: data.order.currency,
-      order_id: data.order.id,
-      handler: async function (response) {
-        const verifyResponse = await fetch("/payment/verify-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(response),
-        });
-
-        const verifyData = await verifyResponse.json();
-
-        if (verifyData.success) {
-          alert("Payment successful!");
-
-          // Download invoice
-          fetch("/payment/download-invoice", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: data.order.id,
-              amount: amount,
-              paymentId: response.razorpay_payment_id,
-            }),
-          })
-          .then((res) => res.blob())
-          .then((blob) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `invoice_${data.order.id}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          });
-        } else {
-          alert("Payment verification failed!");
-        }
-      },
-    };
-
-    const rzp = new Razorpay(options);
-    rzp.open();
-  } else {
-    alert("Error creating payment order!");
-  }
-});
-
-
-
 
 
 function openAddressModal() {
-    document.getElementById('addressModal').style.display = 'flex';
+    console.log('openAddressModal called'); // Debug log
+    document.getElementById('addressModal').style.display = 'block';
 }
 
 function closeAddressModal() {
     document.getElementById('addressModal').style.display = 'none';
 }
 
-function setSelectedAddress(id, name, details) {
-    document.querySelector("h2").innerHTML = `Delivering to <b>${name}</b>`;
-    document.querySelector("p").innerText = details;
-    document.getElementById("selectedAddressId").value = id;
-    closeAddressModal();
+
+function setSelectedAddress(addressId, name, fullAddress) {
+    console.log("Selected Address ID:", addressId);
+
+    // Update the hidden input field
+    document.getElementById("selectedAddressId").value = addressId; 
+
+    // Update UI
+    let nameElement = document.querySelector(".left-section h2 b");
+    let addressElement = document.querySelector(".left-section p");
+
+    if (nameElement && addressElement) {
+        nameElement.innerText = name;
+        addressElement.innerHTML = fullAddress; // Update UI with new address
+    } else {
+        console.error("Could not find elements to update.");
+    }
+
+    closeAddressModal(); // Close modal after selection
 }
+
+document.querySelectorAll('input[name="selectedAddress"]').forEach((radio) => {
+    radio.addEventListener("change", function () {
+        document.getElementById("selectedAddressId").value = this.value;
+        console.log("Updated selectedAddressId to:", this.value);
+    });
+});
+
 
 
 
@@ -398,13 +371,6 @@ document.querySelectorAll('input[name="payment"]').forEach(radio => {
 
 
 
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    console.log("📦 Cart Loaded on Page Load:", cart);
-});
- 
 
 
     function handlePayment(event) {
@@ -428,19 +394,22 @@ document.addEventListener("DOMContentLoaded", () => {
             Swal.fire("Oops!", "Please select a shipping address before proceeding.", "warning");
             return;
         }
-
+        console.log('Selected Address ID:', selectedAddressId);
+        document.getElementById("orderForm").querySelector("input[name='addressId']").value = selectedAddressId;
         if (selectedMethod === "razorpay") {
             fetch('/create-razorpayorder', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+
                 },
                 body: JSON.stringify({ 
                     amount, 
                     currency: "INR", 
                     paymentMethod: "razorpay",
-                    shippingAddressId: selectedAddressId
+                    shippingAddressId: selectedAddressId,
+                    
                 })
             })
             .then(response => response.json())
@@ -471,7 +440,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 order_id: response.razorpay_order_id,
                                 payment_id: response.razorpay_payment_id,
                                 signature: response.razorpay_signature,
-                                shippingAddressId: selectedAddressId
+                                shippingAddressId: selectedAddressId,
+                                
                             })
                         })
                         .then(verifyResponse => verifyResponse.json())
@@ -537,8 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("orderForm").submit();
     }
 
-
-
+    
 
 function applyCoupon() {
     const couponCodeInput = document.getElementById("couponCode");
@@ -700,4 +669,5 @@ function showAddAddressForm() {
 }
 
 </script>
+
 <%- include("../../views/partials/user/footer")%>
