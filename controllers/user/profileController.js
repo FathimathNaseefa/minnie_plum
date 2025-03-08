@@ -6,6 +6,7 @@ const session = require('express-session');
 const Address = require('../../models/addressSchema');
 const user = require('./userController');
 const Order = require('../../models/orderSchema');
+require('dotenv').config();
 
 function generateOtp() {
   const digits = '1234567890';
@@ -24,8 +25,8 @@ const sendVerificationEmail = async (email, otp) => {
       secure: false,
       requireTLS: true,
       auth: {
-        user: 'naseefabroto@gmail.com',
-        pass: 'bnue pcrb tytj cmti',
+        user: process.env.USER ,
+        pass: process.env.PASS,
       },
     });
 
