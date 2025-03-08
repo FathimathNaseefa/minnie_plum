@@ -21,39 +21,34 @@
     
     <style>
         body, html {
-            height: 100%;
-            margin: 0;
-            font-family: "Nunito Sans", sans-serif;
-            overflow: hidden;
-            background-color: #f1eaec;
-        }#otp-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
+           height: 100%;
+           margin: 0;
+           font-family: "Nunito Sans", sans-serif;
+           overflow: hidden;
+           background-color: #f1eaec;
+        }
 
-.otp-input {
-    width: 50px;
-    height: 50px;
-    text-align: center;
-    font-size: 20px;
-    border: 2px solid #d63176;
-    border-radius: 5px;
-    outline: none;
-    transition: 0.2s;
-}
+        #otp-container {
+           display: flex;
+           justify-content: center;
+           gap: 10px;
+        }
 
-.otp-input:focus {
-    border-color: #884a64;
-    box-shadow: 0 0 5px rgba(136, 74, 100, 0.5);
-}
+        .otp-input {
+           width: 50px;
+           height: 50px;
+           text-align: center;
+           font-size: 20px;
+           border: 2px solid #d63176;
+           border-radius: 5px;
+           outline: none;
+           transition: 0.2s;
+        }
 
-
-
-
-
-
-
+        .otp-input:focus {
+            border-color: #884a64;
+            box-shadow: 0 0 5px rgba(136, 74, 100, 0.5);
+        }
 
         .container {
             display: flex;
@@ -146,19 +141,14 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="login_wrap">
-        <div class="padding_eight_all bg-white">
-            <div class="heading_s1">
-                <h3>Email Verification Page</h3>
-            </div>
-            <form id="otpForm" action="/verify-otp" method="post" onsubmit="return validateOTPForm()">
-                <!-- <div class="form-group">
-                    <label for="otp">Enter OTP:</label>
-                    <input type="text" id="otp" name="otp" class="form-control" required maxlength="6" pattern="\d*" />
-                </div> -->
-
-
+   <div class="container">
+        <div class="login_wrap">
+            <div class="padding_eight_all bg-white">
+                <div class="heading_s1">
+                   <h3>Email Verification Page</h3>
+                </div>
+                <form id="otpForm" action="/verify-otp" method="post" onsubmit="return validateOTPForm()">
+                
                 <div class="form-group text-center">
                     <label for="otp">Enter OTP:</label>
                     <div id="otp-container">
@@ -171,8 +161,6 @@
                     </div>
                 </div>
                 <input type="hidden" id="otp" name="otp" />
-
-
 
                 <button type="submit" class="btn btn-primary">Verify Email</button>
                 <div class="form-group text-center">
@@ -315,13 +303,13 @@ function moveNext(input, index) {
                }
             })
         
-
-        
-
        return false;
     }
 
 </script>
 <%- include("../../views/partials/user/footer") %>
+
+
+
 
 
