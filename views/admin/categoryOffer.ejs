@@ -149,13 +149,7 @@ button[type="button"]:hover {
     background-color: #e67e22;
 }
 </style>
-
-
-
-
-
-
- <!-- Error Message -->
+<!-- Error Message -->
 <div id="error-message" style="display: none;" class="alert alert-danger"></div>
 
 <div class="form-container">
@@ -197,83 +191,6 @@ button[type="button"]:hover {
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- <script>
-function showError(message) {
-    const errorMessageElement = document.getElementById('error-message');
-    errorMessageElement.innerText = message;
-    errorMessageElement.style.display = 'block';
-}
-
-// Handle form submission with AJAX
-document.getElementById('category-offer-form').addEventListener('submit', async function (event) {
-    event.preventDefault();
-
-    const formData = new FormData(this);
-    const formObject = {};
-    formData.forEach((value, key) => {
-        formObject[key] = value;
-    });
-
-    try {
-        const response = await fetch('/admin/add-category-offer', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formObject)
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            Swal.fire('Success', data.message, 'success').then(() => location.reload());
-        } else {
-            showError(data.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showError('An error occurred while adding the offer.');
-    }
-});
-
-// Handle delete confirmation and request
-function confirmDelete(offerId, rowId) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, keep it',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('/admin/delete-category-offer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ offerId: offerId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById(rowId).remove(); // Remove the row from table
-                    Swal.fire('Deleted!', 'Your offer has been deleted.', 'success');
-                } else {
-                    Swal.fire('Error!', 'There was an issue deleting the offer.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting the offer:', error);
-                Swal.fire('Error!', 'There was an issue deleting the offer.', 'error');
-            });
-        }
-    });
-}
-</script> -->
-
-
 
 
 <script>
