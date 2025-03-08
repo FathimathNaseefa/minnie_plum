@@ -17,18 +17,20 @@ const orderDetails = async (req, res) => {
         path: 'shippingAddress',
         model: 'UserAddress',
       })
-      .populate('items.productId');
+      .populate({
+        path: 'items.productId',
+        populate: {
+          path: 'category', // Ensure category is populated
+          model: 'Category',
+        },
+      });
 
     if (!order) {
       console.log('Order not found in database'); // Debugging
       return res.status(404).render('orderNotFound');
     }
 
-    if (!order.shippingAddress) {
-      console.error('Shipping Address not found for order:', orderId);
-    }
-
-    console.log('Fetched Order:', order); // Debugging
+    console.log('Fetched Order Data:', JSON.stringify(order, null, 2)); // Debugging
     res.render('order-details', { order });
   } catch (error) {
     console.error('Error fetching order details:', error);
