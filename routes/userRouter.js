@@ -20,6 +20,7 @@ router.get('/pageNotFound', userController.pageNotFound);
 router.get('/', userController.loadHomepage);
 router.get('/logout', userController.logout);
 router.get('/shop', userController.loadShoppingPage);
+router.get('/shop-data', userController.getFilteredProducts);
 router.get('/signup', userController.loadSignup);
 router.post('/signup', userController.signup);
 router.post('/verify-otp', userController.verifyOtp);
