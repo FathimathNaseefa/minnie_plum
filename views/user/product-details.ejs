@@ -72,10 +72,10 @@
             font-size: 14px;  /*18*/
         }
 
-        .highlights ul {
+        /* .highlights ul {
             padding-left: 20px;
             list-style-type: disc;
-        }
+        } */
         .carousel-item{
             height: 400px;
             width: 100%;
@@ -95,11 +95,11 @@
         p{
             font-size: 12px;
         }
-        .product-info, .highlights, p{
+        .product-info,p{
             margin-bottom: 2px;
             padding-bottom: 2px;
         }
-        .product-info, .highlights{
+        .product-info{
             margin-top: 5px;
         }
         .small-input{
@@ -161,6 +161,38 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.product-details-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.product-details-table {
+    width: 50%;
+    margin: 0 200px; /* Centers table and removes upper space */
+    border-collapse: collapse;
+    border: 1px solid #000;
+}
+
+.product-details-table td {
+    vertical-align: top;
+    padding: 8px;
+    width: 50%;
+    border: 1px solid #000;
+}
+
+
+
+
+
+       
+
+
 
     </style>
 </head>
@@ -193,7 +225,11 @@
                         <% } %>
                     </div>
                 </div>
-            </div>
+            </div> 
+
+
+
+            
             <!-- Product Information Section -->
             <div class="col-md-7 product-info">
                 <div class="d-flex justify-content-between align-items-center">
@@ -220,6 +256,7 @@
             <div class="reviews">
                 <p><strong>12 Customer Reviews</strong></p>
             </div>
+            
     
                 
             <% 
@@ -242,7 +279,7 @@
             <% } %>
         </p>
                 
-                
+        <p><strong>Brand:</strong> <%= product.brand.brandName%></p>       
         <p><strong>Category:</strong> <%= category.name%></p>
         <p><strong>Description:</strong> <%= product.description %></p>
         <div class="product-detail">
@@ -299,27 +336,34 @@
 
            <button class="btn btn-outline-primary mt-3">
            <a href="/cart" style="text-decoration: none;">Go to Cart</a>
-           </button>
-
-            <br><br>
-            <div class="highlights">
-                <p><strong>Highlights:</strong></p>
-                <ul>
-                    <% for (let i = 0; i < product.highlights.length; i++) { %>
-                    <li><%= product.highlights[i] %></li>
-                    <% } %>
-                </ul>
+           </button></div>
+    <!-- </div></div>  -->
+     
+        <div class="product-details-container">
+            <table class="product-details-table mb-5">
+                <tr>
+                    <td class="highlights">
+                        <p><strong>Highlights:</strong></p>
+                        <ul>
+                            <% for (let i = 0; i < product.highlights.length; i++) { %>
+                                <li><%= product.highlights[i] %></li>
+                            <% } %>
+                        </ul>
+                    </td>
+                    <td class="specifications">
+                        <p><strong>Specifications:</strong></p>
+                        <p>Material: soft</p>
+                        <p>Care Instructions: dry clean</p>
+                        <p>Occasion: casual</p>
+                    </td>
+                </tr>
+            </table>
             </div>
-            <div class="specifications mt-3">
-                <p><strong>Specifications:</strong></p>
-                <p>Material:soft</p>
-                <p>Care Instructions: dry clean</p>
-                <p>Occassion: casual</p>
-            </div> 
-        </div>
-    </div></div></div>
 
-    <br><br><h4>Recommended Products</h4><br>
+            
+            
+       
+    <h4>Recommended Products</h4><br>
     <div class="row">
         <% recommendedProducts.forEach(function(recommendedProduct) { 
           let finalPrice = recommendedProduct.salePrice;
@@ -498,6 +542,7 @@ function showPopup(message) {
         popup.remove();
     }, 2000);
 }
+
 
 </script>
 
