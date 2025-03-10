@@ -349,6 +349,11 @@ const loadShoppingPage = async (req, res) => {
       .populate('pdtOffer', 'discountValue discountType') // Product Offer
       .populate('catOffer', 'discountValue discountType'); // Category Offer
 
+
+      
+console.log("🔍 Populated Products Response:", JSON.stringify(products, null, 2)); // Debugging
+
+
     // Apply discounts to each product
     products.forEach((product) => {
       let salePrice = product.salePrice;
@@ -372,8 +377,10 @@ const loadShoppingPage = async (req, res) => {
       );
     });
 
+    
     const totalProducts = await Product.countDocuments(query);
-    const totalPages = Math.ceil(totalProducts / limit);
+    const totalPages = Math.ceil(totalProducts / limit) || 1; // Ensure at least 1 page
+
 
     res.render('shop', {
       user: userData,
@@ -393,135 +400,72 @@ const loadShoppingPage = async (req, res) => {
   }
 };
 
-const filterProduct = async (req, res) => {
+
+
+const getFilteredProducts = async (req, res) => {
   try {
-    const user = req.session.user;
-    const category = req.query.category;
-    const brand = req.query.brand;
-    const outOfStock = req.query.outOfStock === 'true'; // Check if user wants out-of-stock products
+    const { query, category, sort, outOfStock, categories } = req.query;
+    let filter = {};
 
-    const findCategory = category
-      ? await Category.findOne({ _id: category })
-      : null;
-    const findBrand = brand ? await Brand.findOne({ _id: brand }) : null;
-    const brands = await Brand.find({}).lean();
-
-    let query = { isBlocked: false };
-
-    // Apply stock filter
-    if (!outOfStock) {
-      query.stock = { $gt: 0 }; // Show only in-stock products
-    } else {
-      query.stock = 0; // Show only out-of-stock products
+    // 🔹 Live Search: Matches anywhere in the product name
+    if (query) {
+      filter.productName = { $regex:'^'+ query, $options: "i" };
     }
 
-    if (findCategory) {
-      query.category = findCategory._id;
-    }
-    if (findBrand) {
-      query.brand = findBrand.brandName;
-    }
+   
+if (category) {
+  const isValidCategoryId = /^[0-9a-fA-F]{24}$/.test(category);
+  if (isValidCategoryId) {
+      filter.category = category;
+  } else {
+      const categoryDoc = await Category.findOne({ name: category });
+      if (categoryDoc) {
+          filter.category = categoryDoc._id;
+      }
+  }
+}
 
-    let findProducts = await Product.find(query).lean();
-    findProducts.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
 
-    const categories = await Category.find({ isListed: true });
-
-    let itemsPerPage = 6;
-    let currentPage = parseInt(req.query.page) || 1;
-    let startIndex = (currentPage - 1) * itemsPerPage;
-    let endIndex = startIndex + itemsPerPage;
-    let totalPages = Math.ceil(findProducts.length / itemsPerPage);
-
-    let currentProduct = findProducts.slice(startIndex, endIndex);
-    let userData = null;
-
-    if (user) {
-      userData = await User.findOne({ _id: user });
-      if (userData) {
-        const searchEntry = {
-          category: findCategory ? findCategory._id : null,
-          brand: findBrand ? findBrand.brandName : null,
-          searchedOn: new Date(),
-        };
-        userData.searchHistory.push(searchEntry);
-        await userData.save();
+    // Handle multiple categories (if `categories` is an array of IDs)
+    if (categories) {
+      const categoryIds = categories.split(",").filter(id => /^[0-9a-fA-F]{24}$/.test(id));
+      if (categoryIds.length > 0) {
+        filter.category = { $in: categoryIds };
       }
     }
 
-    req.session.filteredProducts = currentProduct;
-    res.render('shop', {
-      user: userData,
-      products: currentProduct,
-      category: categories,
-      brand: brands,
-      totalPages,
-      currentPage,
-      selectCategory: category || null,
-      selectedBrand: brand || null,
-      outOfStock, // Pass outOfStock value to frontend
-    });
-  } catch (error) {
-    console.error('Error in filterProduct:', error);
-    res.redirect('/pageNotFound');
-  }
-};
-
-const filterByPrice = async (req, res) => {
-  try {
-    const user = req.session.user;
-    const userData = await User.findOne({ _id: user });
-    const brands = await Brand.find({}).lean();
-    const categories = await Category.find({ isListed: true }).lean();
-
-    let findProducts = await Product.find({
-      salePrice: { $gt: req.query.gt, $lt: req.query.lt },
-      isBlocked: false,
-      quantity: { $gt: 0 },
-    }).lean();
-
-    findProducts.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
-
-    let itemsPerPage = 6;
-    let currentPage = parseInt(req.query.page) || 1;
-    let startIndex = (currentPage - 1) * itemsPerPage;
-    let endIndex = startIndex + itemsPerPage;
-    let totalPages = Math.ceil(findProducts.lenght / itemsPerPage);
-    let currentProduct = findProducts.slice(startIndex, endIndex);
-    req.session.filteredProducts = findProducts;
-
-    res.render('shop', {
-      user: userData,
-      products: currentProduct,
-      category: categories,
-      brand: brands,
-      totalPages,
-      currentPage,
-    });
-  } catch (error) {
-    console.log(error);
-    res.redirect('/pageNotFound');
-  }
-};
-
-const searchProducts = async (req, res) => {
-  try {
-    const { query, category } = req.query;
-    let searchQuery = { productName: { $regex: '^' + query, $options: 'i' } }; // Case-insensitive search
-
-    if (category) {
-      searchQuery.category = category; // Filter by category if selected
+    // 🔹 Out-of-Stock Filter
+    if (outOfStock === "true") {
+      filter.stock = 0; // Show only out-of-stock items
+    } else {
+      filter.stock = { $gt: 0 }; // Show only in-stock items
     }
 
-    const products = await Product.find(searchQuery).populate('category');
-    res.json(products); // Return JSON response
+    // 🔹 Sorting options
+    const sortOptions = {
+      popularity: { popularity: -1 },
+      price_asc: { salePrice: 1 },
+      price_desc: { salePrice: -1 },
+      ratings: { averageRating: -1 },
+      featured: { featured: -1 },
+      new_arrivals: { createdAt: -1 },
+      a_z: { productName: 1 },
+      z_a: { productName: -1 },
+    };
+
+    const sortOption = sortOptions[sort] || { createdAt: -1 };
+    const products = await Product.find(filter)
+    .collation({ locale: "en", strength: 2 }) // Ensures case-insensitive sorting
+    .sort(sortOption);
+
+
+    res.json({ success: true, products });
   } catch (error) {
-    console.error('Error in search:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error fetching products:", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
 
-// Route definition
 
 module.exports = {
   loadHomepage,
@@ -533,8 +477,6 @@ module.exports = {
   loadLogin,
   login,
   loadShoppingPage,
-  filterProduct,
-  filterByPrice,
-  searchProducts,
   logout,
+  getFilteredProducts
 };
