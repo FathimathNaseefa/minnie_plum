@@ -1,5 +1,6 @@
 <%- include("../../views/partials/user/header") %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
 <style>
   .main-container {
@@ -140,25 +141,28 @@
     margin-top: 10px;
   }
 
-  .pagination {
+  #pagination {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    align-items: center;
+    gap: 10px;  /* Ensures spacing between items */
     margin: 20px 0;
-  }
+}
 
-  .pagination a {
+#pagination a {
     padding: 8px 12px;
     background-color: #f0f0f0;
     border: 1px solid #ddd;
     color: #333;
     text-decoration: none;
-  }
+    cursor: pointer;
+}
 
-  .pagination .active {
+#pagination .active {
     background-color: #007bff;
     color: #fff;
-  }
+}
+
 
   .price-filter {
     padding: 10px;
@@ -316,25 +320,44 @@
   border: 0.5px solid gray;
   border-right: none;
 }
+.category-list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adjust spacing between checkbox and text */
+  margin-bottom: 5px;
+}
+
+.category-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
 
 </style>
 
+
 <div class="shop-topbar">
- 
   <div class="sorting">
-    <select id="sort-by" name="sort" onchange="window.location.href=this.value;">
-        <option value="/shop?sort=popularity" <%= sortOption === 'popularity' ? 'selected' : '' %>>Popularity</option>
-        <option value="/shop?sort=price_asc" <%= sortOption === 'price_asc' ? 'selected' : '' %>>Price: Low to High</option>
-        <option value="/shop?sort=price_desc" <%= sortOption === 'price_desc' ? 'selected' : '' %>>Price: High to Low</option>
-        <option value="/shop?sort=ratings" <%= sortOption === 'ratings' ? 'selected' : '' %>>Average Ratings</option>
-        <option value="/shop?sort=featured" <%= sortOption === 'featured' ? 'selected' : '' %>>Featured</option>
-        <option value="/shop?sort=new_arrivals" <%= sortOption === 'new_arrivals' ? 'selected' : '' %>>New Arrivals</option>
-        <option value="/shop?sort=a_z" <%= sortOption === 'a_z' ? 'selected' : '' %>>A - Z</option>
-        <option value="/shop?sort=z_a" <%= sortOption === 'z_a' ? 'selected' : '' %>>Z - A</option>
+    <select id="sort-by" name="sort">
+        <option value="popularity">Popularity</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="ratings">Average Ratings</option>
+        <option value="featured">Featured</option>
+        <option value="new_arrivals">New Arrivals</option>
+        <option value="a_z">A - Z</option>
+        <option value="z_a">Z - A</option>
     </select>
   </div>
- 
-  <form id="searchForm" method="GET" action="/live-search">
+  
+  <form id="searchForm">
     <div class="sform">
       <select class="category" name="category" id="categorySelect">
         <option value="">All Categories</option>
@@ -343,272 +366,182 @@
         <% }); %>
       </select>
       <input type="text" id="searchBox" name="query" placeholder="Search products..." required>
-      <button type="submit" style="background-color: palevioletred;border: 1px solid gray;border-left: none;">
+      <button type="button" id="searchBtn">
         <i class="fas fa-search"></i>
       </button>
     </div>
   </form>
 </div>
 
-<!-- Filter for Out of Stock Products -->
 <div class="filter-section">
   <label>
-    <input type="checkbox" id="show-out-of-stock" onchange="toggleOutOfStock()"> Show Out of Stock Products
+    <input type="checkbox" id="show-out-of-stock"> Show Out of Stock Products
   </label>
 </div>
+
 <div class="main-container">
-   <section class="shop-page container">
-        <div class="product-list-container">
-            <aside class="sidebar">
-                <div class="filter-section">
-                    <div class="filter-title">Categories</div>
-                    <div class="category-brand-container">
-            
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                         <% categories.forEach(cat => { %>
-                            <li class="filter-item">
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" name="category" class="category-filter" value="<%= cat._id %>" 
-                                <%= selectedCategories.includes(cat._id.toString()) ? 'checked' : '' %>
-                                onchange="document.getElementById('filterForm').submit()">
-                               <span><%= cat.name %></span>
-                               </label>
-                            </li>
-                         <% }) %>
-                        </ul>
-            
-                      </form>
-            
-                    </div>
-                  </div>
-             </aside>
-        
+  <section class="shop-page container">
+    <div class="product-list-container">
+      <aside class="sidebar">
+        <div class="filter-section">
+          <div class="filter-title">Categories</div>
+          <ul class="category-list">
+            <% categories.forEach(cat => { %>
+             <li class="filter-item">
+             <label class="category-label">
+             <input type="checkbox" class="category-filter" value="<%= cat._id %>">
+             <%= cat.name %>
+             </label>
+             </li>
+           <% }); %>
+          </ul>
+         </div>
+      </aside>
 
-        
-
-
-     <% 
-    // Define the function in the EJS template
-    function roundToFixedNumber(value, fixedNumber) {
-        return Math.round(value / fixedNumber) * fixedNumber;
-    }
-     %><main class="product-grid" id="productList">
-      <% for (let i = 0; i < products.length; i++) { %>
+      <main class="product-grid" id="productList">
+        <% products.forEach(product => { %>
           <div class="product-card">
-              <span class="wishlist-btn">❤️</span>
-              <a href="/productDetails?id=<%= products[i]._id %>">
-              <img src="/uploads/re-image/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" style="height:170px" />
-              <h5><%= products[i].productName %></h5>
-              <p>Brand: <%= products[i].brand.brandName %></p>
-              
-              
-
-            <% 
-                let salePrice = products[i].salePrice;
-                let finalPrice = products[i].finalPrice || salePrice; // Ensure it falls back to salePrice if finalPrice is null
-                let discountPercent = salePrice > finalPrice ? Math.round(((salePrice - finalPrice) / salePrice) * 100) : 0;
-                %>
-
-                <% if (discountPercent > 0) { %>
-                    <s>₹<%= salePrice.toLocaleString('en-IN') %></s>
-                    ₹<%= finalPrice.toLocaleString('en-IN') %>
-                    <span style="color: red; font-weight: bold;">(<%= discountPercent %>% OFF)</span>
-                <% } else { %>
-                    ₹<%= salePrice.toLocaleString('en-IN') %>  <!-- If no offer, show normal price -->
-                <% } %>
-              </p>
-            
-          </a>
-      </div>
-  <% } %>
-</main>
-</div></div>
-
-    <!-- Pagination -->
-    <div class="pagination">
+            <a href="/productDetails?id=<%= product._id %>">
+              <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="<%= product.productName %>" style="height:170px">
+              <h5><%= product.productName %></h5>
+              <p>₹<%= product.salePrice.toLocaleString('en-IN') %></p>
+            </a>
+          </div>
+        <% }); %>
+      </main>
+    </div>
+    <div id="pagination">
       <% if (currentPage > 1) { %>
-        <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>
+        <a class="page-link" data-page="<%= currentPage - 1 %>">Prev</a>
       <% } %>
-
       <% for (let i = 1; i <= totalPages; i++) { %>
-        <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/shop?page=<%= i %>"><%= i %></a>
+        <a class="page-link <%= currentPage === i ? 'active' : '' %>" data-page="<%= i %>"><%= i %></a>
       <% } %>
-
       <% if (currentPage < totalPages) { %>
-        <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
+        <a class="page-link" data-page="<%= currentPage + 1 %>">Next</a>
       <% } %>
     </div>
   </section>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script>
-  
-  function toggleOutOfStock() {
-      let showOutOfStock = document.getElementById('show-out-of-stock').checked;
-      let url = new URL(window.location.href);
-      let params = new URLSearchParams(url.search);
-
-      if (showOutOfStock) {
-          params.set('outOfStock', 'true');
-      } else {
-          params.delete('outOfStock');
-      }
-
-      url.search = params.toString();
-      window.location.href = url.toString();
-  }
-
-  // Preserve checkbox state on page reload
-  document.addEventListener('DOMContentLoaded', function () {
-      const params = new URLSearchParams(window.location.search);
-      const showOutOfStock = params.get('outOfStock') === 'true';
-      document.getElementById('show-out-of-stock').checked = showOutOfStock;
-  });
-
- 
-
-  document.getElementById('searchForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    const formData = new FormData(this);
-    const query = formData.get('query');
-    const category = formData.get('category');
-
-    try {
-      const response = await fetch(`/live-search?query=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}`);
-      const products = await response.json();
-      displayProducts(products);
-    } catch (error) {
-      console.error('Error fetching search results:', error);
-    }
-  });
-
-  function displayProducts(products) {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = ''; // Clear previous results
-
-    if (products.length === 0) {
-      productList.innerHTML = '<p>No products found.</p>';
-      return;
-    }
-
-    products.forEach(product => {
-      const productCard = document.createElement('div');
-      productCard.className = 'product-card';
-      productCard.innerHTML = `
-        <span class="wishlist-btn">❤️</span>
-        <a href="/productDetails?id=${product._id}">
-          <img src="/uploads/re-image/${product.productImage[0]}" alt="${product.productName}" style="height:170px" />
-          <h5>${product.productName}</h5>
-          <p>Brand: ${product.brand}</p>
-          <p>Price: ₹${product.salePrice.toLocaleString('en-IN')}
-            <span class="text-muted"><strike>₹${product.regularPrice.toLocaleString('en-IN')}</strike></span>
-          </p>
-        </a>
-        <button class="add-to-cart-btn">Add to Cart</button>
-      `;
-      productList.appendChild(productCard);
-    });
-  }
 
 
 
-  document.addEventListener("DOMContentLoaded", function () {
-  const searchInput = document.querySelector("#searchBox"); // Search input field
-  const categorySelect = document.querySelector("#categorySelect"); // Category dropdown
-  const productList = document.getElementById("productList");
-  let debounceTimeout;
 
-  // Function to fetch and display search results
-  function fetchSearchResults() {
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.querySelector("#searchBox");
+    const categoryCheckboxes = document.querySelectorAll(".category-filter");
+    const productList = document.getElementById("productList");
+    const sortBy = document.querySelector("#sort-by");
+    const outOfStockCheckbox = document.getElementById("show-out-of-stock");
+    
+
+    function fetchProducts() {
+     
     const query = searchInput.value.trim();
-    const category = categorySelect.value; // Get selected category
+    const selectedCategories = Array.from(document.querySelectorAll(".category-filter:checked"))
+        .map(checkbox => checkbox.value)
+        .join(",");
 
-    if (!query) {
-      productList.innerHTML = ""; // Clear results if input is empty
-      return;
+    const sort = sortBy.value; // Get the selected sort option
+    const outOfStock = outOfStockCheckbox.checked ? "true" : "false";
+
+    console.log("Fetching products with:", { query, categories: selectedCategories, sort, outOfStock });
+
+    fetch(`/shop-data?query=${encodeURIComponent(query)}&categories=${encodeURIComponent(selectedCategories)}&sort=${sort}&outOfStock=${outOfStock}&_=${new Date().getTime()}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Response received:", data.products);
+
+            productList.innerHTML = "";
+            if (!data.success || data.products.length === 0) {
+                productList.innerHTML = '<p style="text-align:center;">No products found</p>';
+                return;
+            }
+
+            data.products.forEach(product => {
+                let productItem = document.createElement("div");
+                productItem.classList.add("product-card");
+                let discountPercent = product.salePrice > product.finalPrice
+                    ? Math.round(((product.salePrice - product.finalPrice) / product.salePrice) * 100)
+                    : 0;
+
+                productItem.innerHTML = `
+                    <a href="/productDetails?id=${product._id}">
+                        <img src="/uploads/re-image/${product.productImage[0]}" alt="${product.productName}" style="height:170px" />
+                        <h5>${product.productName}</h5>
+                        <p>
+                            ${discountPercent > 0 
+                                ? `<s>₹${product.salePrice.toLocaleString('en-IN')}</s> ₹${product.finalPrice.toLocaleString('en-IN')}
+                                   <span style="color: red; font-weight: bold;">(${discountPercent}% OFF)</span>` 
+                                : `₹${product.salePrice.toLocaleString('en-IN')}`
+                            }
+                        </p>
+                    </a>
+                `;
+                productList.appendChild(productItem);
+            })
+           
+        })
+        .catch(error => console.error("Error fetching products:", error));
+}
+
+
+
+
+    // Add event listeners
+    categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", fetchProducts);
+    });
+
+    searchInput.addEventListener("input", () => setTimeout(fetchProducts, 300));
+    sortBy.addEventListener("change", fetchProducts); // Ensure this is working
+    outOfStockCheckbox.addEventListener("change", fetchProducts);
+
+    // Debug: Log when sortBy changes
+    document.addEventListener("click", function (event) {
+    const selectedOption = event.target.closest(".nice-select .option");
+    if (selectedOption) {
+        console.log("Sorting changed to:", selectedOption.dataset.value);
+
+        // Update the real hidden <select> value
+        sortBy.value = selectedOption.dataset.value;
+
+        // Trigger the change event manually
+        sortBy.dispatchEvent(new Event("change"));
     }
+});
 
-    fetch(`/live-search?query=${query}&category=${category}`)
-      .then(response => response.json())
-      .then(data => {
-        productList.innerHTML = ""; // Clear previous results
+});
 
-        if (data.length === 0) {
-          productList.innerHTML = '<p style="text-align:center;">No products found</p>';
-          return;
-        }
+document.addEventListener("click", function (event) {
+    const selectedOption = event.target.closest(".nice-select .option");
+    if (selectedOption) {
+        console.log("Sorting changed to:", selectedOption.dataset.value);
+        
+        // Manually update the hidden <select> value
+        document.querySelector("#sort-by").value = selectedOption.dataset.value;
 
-        data.forEach(product => {
-          let productItem = document.createElement("div");
-          productItem.classList.add("product-card");
-          productItem.innerHTML = `
-            <a href="/productDetails?id=${product._id}">
-              <img src="/uploads/re-image/${product.productImage[0]}" alt="${product.productName}" style="height:170px" />
-              <h5>${product.productName}</h5>
-              <p>Brand: ${product.brand}</p>
-              <p>Price: ₹${product.salePrice.toLocaleString('en-IN')}
-                <span class="text-muted"><strike>₹${product.regularPrice.toLocaleString('en-IN')}</strike></span>
-              </p>
-            </a>
-            <button class="add-to-cart-btn">Add to Cart</button>
-          `;
-          productList.appendChild(productItem);
-        });
-      })
-      .catch(error => console.error("Error fetching search results:", error));
-  }
-
-  // Debounce function to limit API calls
-  function debounceFetch() {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(fetchSearchResults, 300); // Debounce delay (300ms)
-  }
-
-  // Event listeners
-  searchInput.addEventListener("input", debounceFetch); // Trigger search on input
-  categorySelect.addEventListener("change", fetchSearchResults); // Update results when category changes
+        // Trigger the fetch function
+        fetchProducts();
+    }
 });
 
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const categoryFilters = document.querySelectorAll(".category-filter");
-
-    categoryFilters.forEach((checkbox) => {
-        checkbox.addEventListener("change", function () {
-            let selectedCategories = [];
-            categoryFilters.forEach((cb) => {
-                if (cb.checked) {
-                    selectedCategories.push(cb.value);
-                }
-            });
-
-            let url = new URL(window.location.href);
-            let params = new URLSearchParams(url.search);
-
-            if (selectedCategories.length > 0) {
-                params.set("category", selectedCategories.join(",")); // Store multiple categories
-            } else {
-                params.delete("category");
-            }
-
-            url.search = params.toString();
-            window.location.href = url.toString(); // Refresh page with selected filters
+    document.querySelectorAll("#pagination .page-link").forEach(link => {
+        link.addEventListener("click", function () {
+            const page = this.getAttribute("data-page");
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('page', page);
+            window.location.search = urlParams.toString();
         });
-    });
-
-    // Preserve selected checkboxes on page reload
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedCategories = urlParams.get("category") ? urlParams.get("category").split(",") : [];
-    
-    categoryFilters.forEach((checkbox) => {
-        if (selectedCategories.includes(checkbox.value)) {
-            checkbox.checked = true;
-        }
     });
 });
 
+
 </script>
 <%- include("../../views/partials/user/footer") %>
+
