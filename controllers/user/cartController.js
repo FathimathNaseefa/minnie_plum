@@ -308,17 +308,44 @@ const changeQuantity = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   try {
-    const id = req.query.id;
-    const userId = req.session.user;
-    const user = await User.findById(userId);
-    const cartIndex = user.cart.findIndex((item) => item.productId == id);
-    user.cart.splice(cartIndex, 1);
-    await user.save();
-    res.redirect('/cart');
+      const productId = req.query.id || req.body.productId; // ✅ Support both GET & POST
+      const userId = req.session.user;
+
+      if (!productId) {
+          return res.status(400).json({ status: false, error: "Product ID is required" });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ status: false, error: "User not found" });
+      }
+
+      if (!user.cart || user.cart.length === 0) {
+          return res.status(404).json({ status: false, error: "Cart is empty" });
+      }
+
+      // ✅ Convert ObjectId to string for comparison
+      const cartIndex = user.cart.findIndex((item) => item.productId.toString() === productId);
+
+      if (cartIndex === -1) {
+          return res.status(404).json({ status: false, error: "Product not found in cart" });
+      }
+
+      // Remove the item from the cart
+      user.cart.splice(cartIndex, 1);
+      await user.save();
+
+      // ✅ Recalculate grand total
+      const grandTotal = user.cart.reduce((total, item) => total + item.finalPrice * item.quantity, 0);
+
+      res.json({ status: true, cartEmpty: user.cart.length === 0, grandTotal });
   } catch (error) {
-    res.redirect('/pageNotFound');
+      console.error("Error deleting cart item:", error);
+      res.status(500).json({ status: false, error: "Failed to remove item" });
   }
 };
+
+
 
 module.exports = {
   getCartPage,
