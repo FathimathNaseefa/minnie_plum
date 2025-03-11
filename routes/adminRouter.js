@@ -133,10 +133,7 @@ router.post('/delete-category-offer', offerController1.deleteCategoryOffer);
 
 
 
-// Referral Offers
-router.get('/referral-offers', offerController1.getReferralOffers);
-router.post('/add-referral-offer', offerController1.addReferralOffer);
-router.post('/delete-referral-offer', offerController1.deleteReferralOffer);
+
 
 
 
